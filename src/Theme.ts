@@ -18,7 +18,6 @@ export default {
   palette: {
     white: "#FFF",
     black: "#000",
-    border: "#999",
 
     gray1: "#111",
     gray2: "#222",

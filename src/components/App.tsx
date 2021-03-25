@@ -11,6 +11,9 @@ import LocationSelector from "./LocationSelector";
 const Container = styled.div`
   height: 100vh;
   width: 100vw;
+  * {
+    color: ${Theme.palette.white};
+  }
   display: grid;
   grid-template-areas:
     "breadcrumbs"
@@ -34,18 +37,23 @@ const Container = styled.div`
 `;
 const StyledBreadcrumbs = styled(Breadcrumbs)`
   grid-area: breadcrumbs;
-  border-bottom: 1px solid ${Theme.palette.border};
+  background-color: ${Theme.palette.gray3};
 `;
 const StyledLocationList = styled(LocationList)`
   grid-area: locationList;
-  border-right: 1px solid ${Theme.palette.border};
+  border-top: 1px solid ${Theme.palette.gray1};
+  border-right: 1px solid ${Theme.palette.gray1};
   margin: 0;
+  background-color: ${Theme.palette.gray2};
 `;
 const StyledFolderView = styled(FolderView)`
   grid-area: folderView;
+  border-top: 1px solid ${Theme.palette.gray4};
+  background-color: ${Theme.palette.gray3};
 `;
 const StyledLocationSelector = styled(LocationSelector)`
   grid-area: locationSelector;
+  background-color: ${Theme.palette.gray3};
 `;
 
 export default function App() {

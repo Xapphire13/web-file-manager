@@ -3,7 +3,7 @@ import React from "react";
 import Theme from "../../Theme";
 
 export interface PressableProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
   onPress?: () => void;

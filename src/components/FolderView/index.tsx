@@ -4,9 +4,9 @@ import { loadDirectoryChildren } from "../../Api";
 import { RemoteDirectory } from "../../models/RemoteDirectory";
 import { RemoteFile } from "../../models/RemoteFile";
 import Theme from "../../Theme";
-import Pressable from "../core/Pressable";
 import FileRow from "./FileRow";
 import pathUtil from "path";
+import FolderViewRow from "./FolderViewRow";
 
 export interface FolderViewProps {
   locationId: string | undefined;
@@ -23,42 +23,11 @@ const FileList = styled.ul`
 `;
 
 const ColumnHeaders = styled.div`
-  display: flex;
+  display: grid;
   align-items: center;
   font-weight: bold;
-  border-bottom: 1px solid ${Theme.palette.border};
-`;
-
-const FileContainer = styled.li`
-  display: block;
-`;
-
-const Icon = styled.div`
-  width: 32px;
-  margin-right: ${Theme.spacing.small}px;
-`;
-
-const Name = styled.div`
-  flex-grow: 1;
-`;
-
-const Size = styled.div`
-  width: 100px;
-`;
-
-const ModifiedAt = styled.div`
-  width: 200px;
-`;
-
-const ParentFolderRow = styled(Pressable)`
-  height: 40px;
-  padding-left: ${32 + Theme.spacing.small}px;
-
-  @media (hover: hover) {
-    :hover {
-      background-color: ${Theme.palette.gray14};
-    }
-  }
+  column-gap: ${Theme.spacing.tiny}px;
+  grid-template-columns: 40px 1fr 150px 100px;
 `;
 
 export default function FolderView({
@@ -96,24 +65,27 @@ export default function FolderView({
       {files && (
         <>
           <ColumnHeaders>
-            <Icon />
-            <Name>Name</Name>
-            <ModifiedAt>Last Modified</ModifiedAt>
-            <Size>Size</Size>
+            <div />
+            <div>Name</div>
+            <div>Last Modified</div>
+            <div>Size</div>
           </ColumnHeaders>
           <FileList>
             {path !== "/" && (
-              <ParentFolderRow onPress={handleGoToParentFolder} fullWidth>
-                ..
-              </ParentFolderRow>
+              <FolderViewRow
+                onPress={handleGoToParentFolder}
+                gridTemplateColumns="40px 1fr"
+              >
+                <div />
+                <div>..</div>
+              </FolderViewRow>
             )}
             {files.map((file) => (
-              <FileContainer key={file.path}>
-                <FileRow
-                  onPress={() => handleOnFilePressed(file)}
-                  file={file}
-                />
-              </FileContainer>
+              <FileRow
+                key={file.path}
+                onPress={() => handleOnFilePressed(file)}
+                file={file}
+              />
             ))}
           </FileList>
         </>

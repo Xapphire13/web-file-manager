@@ -13,7 +13,7 @@ const StyledPressable = styled(Pressable)`
 
   @media (hover: hover) {
     :hover {
-      background-color: ${Theme.palette.gray14};
+      background-color: ${Theme.palette.gray5};
     }
   }
 `;
