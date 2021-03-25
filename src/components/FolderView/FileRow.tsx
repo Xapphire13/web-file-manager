@@ -19,7 +19,11 @@ const Icon = styled.div`
 
 export default function FileRow({ file, onPress }: FileRowProps) {
   return (
-    <FolderViewRow onPress={onPress} gridTemplateColumns="40px 1fr 150px 100px">
+    <FolderViewRow
+      onPress={onPress}
+      gridTemplateColumns="40px 1fr 150px 100px"
+      actions={[]}
+    >
       <Icon>
         <FileIcon
           filename={file.name}

@@ -1,15 +1,21 @@
 import { styled } from "@linaria/react";
-import React from "react";
+import { useSpring, animated } from "react-spring";
+import React, { useState } from "react";
 import Theme from "../../Theme";
 import Pressable from "../core/Pressable";
+import useWindowSize from "../../hooks/useWindowSize";
 
 const Container = styled.li`
   display: block;
+  overflow: hidden;
+  background-color: ${Theme.palette.gray5};
 `;
 
-const SlideSurface = styled.div`
+// @ts-expect-error Type conflict between styled<>animated
+const SlideSurface = styled(animated.div)`
   position: relative;
   height: 40px;
+  background-color: ${Theme.palette.gray3};
 `;
 
 const SlideSurfaceChildrenContainer = styled.div`
@@ -34,8 +40,27 @@ const ButtonSurface = styled(Pressable)`
   }
 `;
 
+const ActionHoverTarget = styled.div`
+  display: flex;
+  align-items: center;
+  width: 20px;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: all;
+`;
+
+const ActionHoverTargetSymbol = styled.div`
+  position: relative;
+  right: -15px;
+  height: 10px;
+  width: 10px;
+  background-color: ${Theme.palette.white};
+  transform: rotate(45deg);
+`;
+
 interface FolderViewRowProps {
   children: React.ReactElement | React.ReactElement[];
+  actions?: any[]; // TODO
   gridTemplateColumns?: string;
   onPress?: () => void;
 }
@@ -44,13 +69,27 @@ export default function FolderViewRow({
   children,
   gridTemplateColumns = "100%",
   onPress,
+  actions,
 }: FolderViewRowProps) {
+  const [slide, setSlide] = useState(false);
+  const springProps = useSpring({ left: slide ? -100 : 0 });
+  const finalGridTemplateColumns = actions
+    ? `${gridTemplateColumns} auto`
+    : gridTemplateColumns;
+
   return (
-    <Container>
-      <SlideSurface>
+    <Container onMouseLeave={() => setSlide(false)}>
+      <SlideSurface style={springProps}>
         <ButtonSurface onPress={onPress} />
-        <SlideSurfaceChildrenContainer style={{ gridTemplateColumns }}>
+        <SlideSurfaceChildrenContainer
+          style={{ gridTemplateColumns: finalGridTemplateColumns }}
+        >
           {children}
+          {actions && (
+            <ActionHoverTarget onMouseEnter={() => setSlide(true)}>
+              <ActionHoverTargetSymbol />
+            </ActionHoverTarget>
+          )}
         </SlideSurfaceChildrenContainer>
       </SlideSurface>
     </Container>

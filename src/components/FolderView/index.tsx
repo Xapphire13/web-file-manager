@@ -27,7 +27,7 @@ const ColumnHeaders = styled.div`
   align-items: center;
   font-weight: bold;
   column-gap: ${Theme.spacing.tiny}px;
-  grid-template-columns: 40px 1fr 150px 100px;
+  grid-template-columns: 40px 1fr 150px 100px 5px;
 `;
 
 export default function FolderView({
