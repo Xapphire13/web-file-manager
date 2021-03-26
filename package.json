@@ -45,6 +45,7 @@
     "react-dom": "^17.0.1",
     "react-feather": "^2.0.9",
     "react-router": "^5.2.0",
-    "react-spring": "^9.0.0"
+    "react-spring": "^9.0.0",
+    "react-use-measure": "^2.0.4"
   }
 }

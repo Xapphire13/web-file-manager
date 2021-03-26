@@ -20,6 +20,7 @@ const Container = styled.div`
     "locationSelector"
     "folderView";
   grid-template-rows: auto auto 1fr;
+  background-color: ${Theme.palette.gray3};
 
   ${Theme.responsive.mediumAndAbove} {
     grid-template-columns: 200px 1fr;
@@ -37,7 +38,6 @@ const Container = styled.div`
 `;
 const StyledBreadcrumbs = styled(Breadcrumbs)`
   grid-area: breadcrumbs;
-  background-color: ${Theme.palette.gray3};
 `;
 const StyledLocationList = styled(LocationList)`
   grid-area: locationList;
@@ -49,11 +49,9 @@ const StyledLocationList = styled(LocationList)`
 const StyledFolderView = styled(FolderView)`
   grid-area: folderView;
   border-top: 1px solid ${Theme.palette.gray4};
-  background-color: ${Theme.palette.gray3};
 `;
 const StyledLocationSelector = styled(LocationSelector)`
   grid-area: locationSelector;
-  background-color: ${Theme.palette.gray3};
 `;
 
 export default function App() {

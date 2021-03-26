@@ -3,7 +3,6 @@ import { useSpring, animated } from "react-spring";
 import React, { useState } from "react";
 import Theme from "../../Theme";
 import Pressable from "../core/Pressable";
-import useWindowSize from "../../hooks/useWindowSize";
 
 const Container = styled.li`
   display: block;
