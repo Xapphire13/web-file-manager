@@ -7,9 +7,9 @@ import Theme from "../../Theme";
 import FileRow from "./FileRow";
 import pathUtil from "path";
 import FolderViewRow from "./FolderViewRow";
-import SwipableRow from "../SwipableRow";
-import SwipableRowContent from "../SwipableRow/SwipableRowContent";
-import SwipableRowHiddenContent from "../SwipableRow/SwipableRowHiddenContent";
+import SwipeableRow from "../SwipeableRow";
+import SwipeableRowContent from "../SwipeableRow/SwipeableRowContent";
+import SwipeableRowHiddenContent from "../SwipeableRow/SwipeableRowHiddenContent";
 
 export interface FolderViewProps {
   locationId: string | undefined;
@@ -93,15 +93,17 @@ export default function FolderView({
           </FileList>
         </>
       )}
-      <SwipableRow>
-        <SwipableRowContent>Content</SwipableRowContent>
-        <SwipableRowHiddenContent side="left">
+      <SwipeableRow>
+        <SwipeableRowContent>
+          <div style={{ height: 40 }}>Content</div>
+        </SwipeableRowContent>
+        <SwipeableRowHiddenContent side="left">
           Hidden Left
-        </SwipableRowHiddenContent>
-        <SwipableRowHiddenContent side="right">
+        </SwipeableRowHiddenContent>
+        <SwipeableRowHiddenContent side="right">
           Hidden Right
-        </SwipableRowHiddenContent>
-      </SwipableRow>
+        </SwipeableRowHiddenContent>
+      </SwipeableRow>
     </div>
   );
 }
