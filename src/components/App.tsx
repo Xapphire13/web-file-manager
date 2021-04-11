@@ -11,16 +11,12 @@ import LocationSelector from "./LocationSelector";
 const Container = styled.div`
   height: 100vh;
   width: 100vw;
-  * {
-    color: ${Theme.palette.white};
-  }
   display: grid;
   grid-template-areas:
     "breadcrumbs"
     "locationSelector"
     "folderView";
   grid-template-rows: auto auto 1fr;
-  background-color: ${Theme.palette.gray3};
 
   ${Theme.responsive.mediumAndAbove} {
     grid-template-columns: 200px 1fr;
@@ -29,26 +25,16 @@ const Container = styled.div`
       "breadcrumbs breadcrumbs"
       "locationList folderView";
   }
-
-  ${Theme.responsive.largeAndAbove} {
-    width: ${Theme.breakpoints.large}px;
-    margin-left: auto;
-    margin-right: auto;
-  }
 `;
 const StyledBreadcrumbs = styled(Breadcrumbs)`
   grid-area: breadcrumbs;
 `;
 const StyledLocationList = styled(LocationList)`
   grid-area: locationList;
-  border-top: 1px solid ${Theme.palette.gray1};
-  border-right: 1px solid ${Theme.palette.gray1};
   margin: 0;
-  background-color: ${Theme.palette.gray2};
 `;
 const StyledFolderView = styled(FolderView)`
   grid-area: folderView;
-  border-top: 1px solid ${Theme.palette.gray4};
 `;
 const StyledLocationSelector = styled(LocationSelector)`
   grid-area: locationSelector;
@@ -90,14 +76,16 @@ export default function App() {
   };
 
   return (
-    <Container>
+    <Container className="bg-gray-700 text-white">
       <StyledBreadcrumbs
+        className="border-gray-400 border border-t-0 border-l-0 border-r-0"
         path={selectedPath}
         onPathChanged={handleOnPathChanged}
       />
 
       {breakpoints.mediumAndAbove ? (
         <StyledLocationList
+          className="bg-gray-800"
           locationId={selectedLocationId}
           path={selectedPath}
           onLocationChanged={handleLocationChanged}

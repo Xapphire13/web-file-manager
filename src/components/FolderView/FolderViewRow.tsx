@@ -7,14 +7,12 @@ import Pressable from "../core/Pressable";
 const Container = styled.li`
   display: block;
   overflow: hidden;
-  background-color: ${Theme.palette.gray5};
 `;
 
 // @ts-expect-error Type conflict between styled<>animated
 const SlideSurface = styled(animated.div)`
   position: relative;
   height: 40px;
-  background-color: ${Theme.palette.gray3};
 `;
 
 const SlideSurfaceChildrenContainer = styled.div`
@@ -77,7 +75,10 @@ export default function FolderViewRow({
     : gridTemplateColumns;
 
   return (
-    <Container onMouseLeave={() => setSlide(false)}>
+    <Container
+      className="even:bg-gray-800 rounded-lg"
+      onMouseLeave={() => setSlide(false)}
+    >
       <SlideSurface style={springProps}>
         <ButtonSurface onPress={onPress} />
         <SlideSurfaceChildrenContainer

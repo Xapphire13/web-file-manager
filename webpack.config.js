@@ -51,6 +51,17 @@ module.exports = {
               sourceMap: isDev,
             },
           },
+          {
+            loader: "postcss-loader",
+            options: {
+              postcssOptions: {
+                plugins: [
+                  ["tailwindcss", {}],
+                  ["autoprefixer", {}],
+                ],
+              },
+            },
+          },
         ],
       },
     ],

@@ -9,8 +9,6 @@ export interface BreadcrumbProps {
 }
 
 const StyledPressable = styled(Pressable)`
-  padding: ${Theme.spacing.tiny}px ${Theme.spacing.small}px;
-
   @media (hover: hover) {
     :hover {
       background-color: ${Theme.palette.gray5};
@@ -19,5 +17,9 @@ const StyledPressable = styled(Pressable)`
 `;
 
 export default function Breadcrumb({ name, onPress }: BreadcrumbProps) {
-  return <StyledPressable onPress={onPress}>{name}</StyledPressable>;
+  return (
+    <StyledPressable className="text-lg px-2" onPress={onPress}>
+      {name}
+    </StyledPressable>
+  );
 }

@@ -1,6 +1,6 @@
 import { styled } from "@linaria/react";
+import { cx } from "@linaria/core";
 import React from "react";
-import Theme from "../../Theme";
 
 export interface PressableProps {
   children?: React.ReactNode;
@@ -15,7 +15,6 @@ const Container = styled.button<{
 }>`
   background: none;
   border: none;
-  padding: 0;
   width: ${({ fullWidth }) => (fullWidth ? "100%" : "unset")};
   text-align: unset;
 
@@ -47,7 +46,7 @@ export default function Pressable({
 
   return (
     <Container
-      className={className}
+      className={cx("p-0", className)}
       style={style}
       onClick={handleOnPress}
       fullWidth={fullWidth}

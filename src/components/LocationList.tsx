@@ -56,7 +56,11 @@ export default function LocationList({
     <Container className={className} style={style}>
       {locations.map(({ id, name }) => (
         <li key={id}>
-          <Pressable onPress={handleLocationLabelPressed} fullWidth>
+          <Pressable
+            className="text-lg"
+            onPress={handleLocationLabelPressed}
+            fullWidth
+          >
             <div>{name}</div>
           </Pressable>
           <StyledFolderTree

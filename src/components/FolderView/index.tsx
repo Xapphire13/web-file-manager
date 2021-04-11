@@ -1,4 +1,5 @@
 import { styled } from "@linaria/react";
+import { cx } from "@linaria/core";
 import React, { useEffect, useState } from "react";
 import { loadDirectoryChildren } from "../../Api";
 import { RemoteDirectory } from "../../models/RemoteDirectory";
@@ -64,10 +65,13 @@ export default function FolderView({
   };
 
   return (
-    <div className={className} style={style}>
+    <div className={cx(className, "p-3")} style={style}>
       {files && (
         <>
-          <ColumnHeaders>
+          <div className="bg-gray-800 shadow rounded-lg p-2 text-gray-500">
+            Search files...
+          </div>
+          <ColumnHeaders className="border border-gray-300 border-l-0 border-r-0 border-t-0">
             <div />
             <div>Name</div>
             <div>Last Modified</div>
@@ -93,17 +97,6 @@ export default function FolderView({
           </FileList>
         </>
       )}
-      <SwipeableRow>
-        <SwipeableRowContent>
-          <div style={{ height: 40 }}>Content</div>
-        </SwipeableRowContent>
-        <SwipeableRowHiddenContent side="left">
-          Hidden Left
-        </SwipeableRowHiddenContent>
-        <SwipeableRowHiddenContent side="right">
-          Hidden Right
-        </SwipeableRowHiddenContent>
-      </SwipeableRow>
     </div>
   );
 }

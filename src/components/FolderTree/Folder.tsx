@@ -25,8 +25,6 @@ const SubFolders = styled.ul`
 `;
 
 const folderStyle: CSSProperties = {
-  position: "relative",
-  top: 2,
   marginRight: Theme.spacing.tiny,
 };
 
@@ -70,7 +68,11 @@ export default function Folder({
 
   return (
     <Container>
-      <Pressable onPress={handleOnPress} fullWidth>
+      <Pressable
+        className="text-lg flex items-center"
+        onPress={handleOnPress}
+        fullWidth
+      >
         {expanded ? (
           <StyledFolderMinus size={16} />
         ) : (
@@ -83,6 +85,7 @@ export default function Folder({
           {subDirs.map((file) => (
             <Folder
               key={file.path}
+              locationId={locationId}
               currentPath={currentPath}
               dir={file}
               onPathChanged={onPathChanged}

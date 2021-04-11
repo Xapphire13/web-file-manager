@@ -1,4 +1,4 @@
-import "modern-normalize/modern-normalize.css";
+import "tailwindcss/tailwind.css";
 import "@reach/listbox/styles.css";
 import React from "react";
 import ReactDOM from "react-dom";
