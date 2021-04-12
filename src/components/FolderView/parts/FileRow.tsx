@@ -1,9 +1,9 @@
 import React from "react";
-import { RemoteFile } from "../../models/RemoteFile";
-import formatSize from "../../utils/formatSize";
+import { RemoteFile } from "../../../models/RemoteFile";
+import formatSize from "../../../utils/formatSize";
 import { DateTime } from "luxon";
-import FileIcon from "../FileIcon";
-import { RemoteDirectory } from "../../models/RemoteDirectory";
+import FileIcon from "../../FileIcon";
+import { RemoteDirectory } from "../../../models/RemoteDirectory";
 import FolderViewRow from "./FolderViewRow";
 
 export interface FileRowProps {

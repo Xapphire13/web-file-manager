@@ -1,8 +1,6 @@
 import { useSpring, animated } from "react-spring";
 import React, { useState } from "react";
-import Pressable from "../core/Pressable";
-
-const SlideSurface = animated.div;
+import Pressable from "../../core/Pressable";
 
 interface FolderViewRowProps {
   children: React.ReactElement | React.ReactElement[];
@@ -28,7 +26,7 @@ export default function FolderViewRow({
       className="even:bg-gray-800 rounded-lg block overflow-hidden"
       onMouseLeave={() => setSlide(false)}
     >
-      <SlideSurface className="relative h-10" style={springProps}>
+      <animated.div className="relative h-10" style={springProps}>
         <Pressable
           className="absolute w-full h-full hover-hover:hover:bg-gray-400"
           onPress={onPress}
@@ -47,7 +45,7 @@ export default function FolderViewRow({
             </div>
           )}
         </div>
-      </SlideSurface>
+      </animated.div>
     </li>
   );
 }

@@ -1,16 +1,12 @@
-import { styled } from "@linaria/react";
 import { cx } from "@linaria/core";
 import React, { useEffect, useState } from "react";
 import { loadDirectoryChildren } from "../../Api";
 import { RemoteDirectory } from "../../models/RemoteDirectory";
 import { RemoteFile } from "../../models/RemoteFile";
-import Theme from "../../Theme";
-import FileRow from "./FileRow";
+import FileRow from "./parts/FileRow";
 import pathUtil from "path";
-import FolderViewRow from "./FolderViewRow";
-import SwipeableRow from "../SwipeableRow";
-import SwipeableRowContent from "../SwipeableRow/SwipeableRowContent";
-import SwipeableRowHiddenContent from "../SwipeableRow/SwipeableRowHiddenContent";
+import FolderViewRow from "./parts/FolderViewRow";
+import ColumnHeaders from "./parts/ColumnHeaders";
 
 export interface FolderViewProps {
   locationId: string | undefined;
@@ -19,10 +15,6 @@ export interface FolderViewProps {
   className?: string;
   style?: React.CSSProperties;
 }
-
-const ColumnHeaders = styled.div`
-  grid-template-columns: 40px 1fr 150px 100px 5px;
-`;
 
 export default function FolderView({
   locationId,
@@ -58,16 +50,13 @@ export default function FolderView({
     <div className={cx("p-3", className)} style={style}>
       {files && (
         <>
-          <div className="bg-gray-800 shadow rounded-lg p-2 text-gray-500">
+          <div className="bg-gray-800 shadow rounded-lg p-2 text-gray-500 mb-2">
             Search files...
           </div>
-          <ColumnHeaders className="border border-gray-300 border-l-0 border-r-0 border-t-0 grid items-center font-bold gap-1">
-            <div />
-            <div>Name</div>
-            <div>Last Modified</div>
-            <div>Size</div>
-          </ColumnHeaders>
-          <ul className="list-none pl-0 m-0">
+
+          <ColumnHeaders />
+
+          <ul className="list-none pl-0 m-0 mt-2">
             {path !== "/" && (
               <FolderViewRow
                 onPress={handleGoToParentFolder}
