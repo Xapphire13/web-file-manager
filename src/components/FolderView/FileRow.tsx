@@ -1,4 +1,3 @@
-import { styled } from "@linaria/react";
 import React from "react";
 import { RemoteFile } from "../../models/RemoteFile";
 import formatSize from "../../utils/formatSize";
@@ -12,11 +11,6 @@ export interface FileRowProps {
   onPress: () => void;
 }
 
-const Icon = styled.div`
-  margin-left: auto;
-  margin-right: auto;
-`;
-
 export default function FileRow({ file, onPress }: FileRowProps) {
   return (
     <FolderViewRow
@@ -24,12 +18,12 @@ export default function FileRow({ file, onPress }: FileRowProps) {
       gridTemplateColumns="40px 1fr 150px 100px"
       actions={[]}
     >
-      <Icon>
+      <div className="ml-auto mr-auto">
         <FileIcon
           filename={file.name}
           isFolder={file instanceof RemoteDirectory}
         />
-      </Icon>
+      </div>
       <div>{file.name}</div>
       <div>
         {DateTime.fromJSDate(file.modifiedAt).toLocaleString(DateTime.DATE_MED)}

@@ -1,6 +1,4 @@
-import { styled } from "@linaria/react";
 import React from "react";
-import Theme from "../../Theme";
 import Pressable from "../core/Pressable";
 
 export interface BreadcrumbProps {
@@ -8,18 +6,13 @@ export interface BreadcrumbProps {
   onPress: () => void;
 }
 
-const StyledPressable = styled(Pressable)`
-  @media (hover: hover) {
-    :hover {
-      background-color: ${Theme.palette.gray5};
-    }
-  }
-`;
-
 export default function Breadcrumb({ name, onPress }: BreadcrumbProps) {
   return (
-    <StyledPressable className="text-lg px-2" onPress={onPress}>
+    <Pressable
+      className="text-lg px-2 hover-hover:hover:bg-gray-400 hover-hover:hover:rounded-full"
+      onPress={onPress}
+    >
       {name}
-    </StyledPressable>
+    </Pressable>
   );
 }

@@ -2,7 +2,7 @@ import React from "react";
 import Breadcrumb from "./Breadcrumb";
 import { ChevronRight } from "react-feather";
 import isNonNull from "../../utils/isNonNull";
-import { styled } from "@linaria/react";
+import { cx } from "@linaria/core";
 
 export interface BreadcrumbsProps {
   path: string;
@@ -11,12 +11,6 @@ export interface BreadcrumbsProps {
   className?: string;
   style?: React.CSSProperties;
 }
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  height: 40px;
-`;
 
 export default function Breadcrumbs({
   className,
@@ -31,7 +25,7 @@ export default function Breadcrumbs({
   };
 
   return (
-    <Container className={className} style={style}>
+    <div className={cx("flex items-center h-10", className)} style={style}>
       {pathSegments.reduce<JSX.Element[]>(
         (acc, segment, i) =>
           [
@@ -45,6 +39,6 @@ export default function Breadcrumbs({
           ].filter(isNonNull),
         []
       )}
-    </Container>
+    </div>
   );
 }

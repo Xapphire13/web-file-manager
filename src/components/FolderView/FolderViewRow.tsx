@@ -1,59 +1,8 @@
-import { styled } from "@linaria/react";
 import { useSpring, animated } from "react-spring";
 import React, { useState } from "react";
-import Theme from "../../Theme";
 import Pressable from "../core/Pressable";
 
-const Container = styled.li`
-  display: block;
-  overflow: hidden;
-`;
-
-// @ts-expect-error Type conflict between styled<>animated
-const SlideSurface = styled(animated.div)`
-  position: relative;
-  height: 40px;
-`;
-
-const SlideSurfaceChildrenContainer = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  display: grid;
-  column-gap: ${Theme.spacing.tiny}px;
-  align-items: center;
-`;
-
-const ButtonSurface = styled(Pressable)`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-
-  @media (hover: hover) {
-    :hover {
-      background-color: ${Theme.palette.gray5};
-    }
-  }
-`;
-
-const ActionHoverTarget = styled.div`
-  display: flex;
-  align-items: center;
-  width: 20px;
-  height: 100%;
-  overflow: hidden;
-  pointer-events: all;
-`;
-
-const ActionHoverTargetSymbol = styled.div`
-  position: relative;
-  right: -15px;
-  height: 10px;
-  width: 10px;
-  background-color: ${Theme.palette.white};
-  transform: rotate(45deg);
-`;
+const SlideSurface = animated.div;
 
 interface FolderViewRowProps {
   children: React.ReactElement | React.ReactElement[];
@@ -75,23 +24,30 @@ export default function FolderViewRow({
     : gridTemplateColumns;
 
   return (
-    <Container
-      className="even:bg-gray-800 rounded-lg"
+    <li
+      className="even:bg-gray-800 rounded-lg block overflow-hidden"
       onMouseLeave={() => setSlide(false)}
     >
-      <SlideSurface style={springProps}>
-        <ButtonSurface onPress={onPress} />
-        <SlideSurfaceChildrenContainer
+      <SlideSurface className="relative h-10" style={springProps}>
+        <Pressable
+          className="absolute w-full h-full hover-hover:hover:bg-gray-400"
+          onPress={onPress}
+        />
+        <div
+          className="absolute w-full h-full pointer-events-none grid gap-1 items-center"
           style={{ gridTemplateColumns: finalGridTemplateColumns }}
         >
           {children}
           {actions && (
-            <ActionHoverTarget onMouseEnter={() => setSlide(true)}>
-              <ActionHoverTargetSymbol />
-            </ActionHoverTarget>
+            <div
+              className="flex items-center w-5 h-full overflow-hidden pointer-events-auto"
+              onMouseEnter={() => setSlide(true)}
+            >
+              <div className="relative -right-4 h-3 w-3 bg-white transform-gpu rotate-45" />
+            </div>
           )}
-        </SlideSurfaceChildrenContainer>
+        </div>
       </SlideSurface>
-    </Container>
+    </li>
   );
 }

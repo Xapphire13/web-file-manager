@@ -1,10 +1,9 @@
-import { styled } from "@linaria/react";
 import React, { useEffect, useState } from "react";
 import { loadLocations } from "../Api";
 import { RemoteLocation } from "../models/RemoteLocation";
-import Theme from "../Theme";
 import Pressable from "./core/Pressable";
 import FolderTree from "./FolderTree";
+import { cx } from "@linaria/core";
 
 export interface LocationListProps {
   locationId: string | undefined;
@@ -14,15 +13,6 @@ export interface LocationListProps {
   className?: string;
   style?: React.CSSProperties;
 }
-
-const Container = styled.ul`
-  list-style: none;
-  padding-left: 0;
-`;
-
-const StyledFolderTree = styled(FolderTree)`
-  margin-left: ${Theme.spacing.medium}px;
-`;
 
 export default function LocationList({
   locationId,
@@ -53,7 +43,7 @@ export default function LocationList({
   };
 
   return (
-    <Container className={className} style={style}>
+    <ul className={cx("list-none px-3 py-2", className)} style={style}>
       {locations.map(({ id, name }) => (
         <li key={id}>
           <Pressable
@@ -63,13 +53,14 @@ export default function LocationList({
           >
             <div>{name}</div>
           </Pressable>
-          <StyledFolderTree
+          <FolderTree
+            className="ml-5"
             locationId={id}
             path={path}
             onPathChanged={onPathChanged}
           />
         </li>
       ))}
-    </Container>
+    </ul>
   );
 }

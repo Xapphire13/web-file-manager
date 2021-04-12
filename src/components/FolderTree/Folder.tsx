@@ -1,10 +1,6 @@
-import { styled } from "@linaria/react";
-import { CSSProperties } from "@linaria/core";
 import React, { useEffect, useState } from "react";
 import { loadDirectoryChildren } from "../../Api";
 import { RemoteDirectory } from "../../models/RemoteDirectory";
-import Theme from "../../Theme";
-import { FolderMinus, FolderPlus } from "react-feather";
 import Pressable from "../core/Pressable";
 import path from "path";
 import isDescendantDirectory from "../../utils/isDescendantDirectory";
@@ -15,26 +11,6 @@ export interface FolderProps {
   onPathChanged: (path: string) => void;
   currentPath: string;
 }
-
-const Container = styled.li``;
-
-const SubFolders = styled.ul`
-  margin: 0;
-  margin-left: ${Theme.spacing.medium}px;
-  list-style: none;
-`;
-
-const folderStyle: CSSProperties = {
-  marginRight: Theme.spacing.tiny,
-};
-
-const StyledFolderMinus = styled(FolderMinus)`
-  ${folderStyle}
-`;
-
-const StyledFolderPlus = styled(FolderPlus)`
-  ${folderStyle}
-`;
 
 export default function Folder({
   locationId,
@@ -67,21 +43,16 @@ export default function Folder({
   };
 
   return (
-    <Container>
+    <li>
       <Pressable
         className="text-lg flex items-center"
         onPress={handleOnPress}
         fullWidth
       >
-        {expanded ? (
-          <StyledFolderMinus size={16} />
-        ) : (
-          <StyledFolderPlus size={16} />
-        )}
         {dir.name}
       </Pressable>
       {subDirs && expanded && (
-        <SubFolders>
+        <ul className="m-0 ml-1 list-none">
           {subDirs.map((file) => (
             <Folder
               key={file.path}
@@ -91,8 +62,8 @@ export default function Folder({
               onPathChanged={onPathChanged}
             />
           ))}
-        </SubFolders>
+        </ul>
       )}
-    </Container>
+    </li>
   );
 }

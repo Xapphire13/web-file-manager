@@ -1,8 +1,8 @@
-import { styled } from "@linaria/react";
 import React, { useEffect, useState } from "react";
 import { loadDirectoryChildren } from "../../Api";
 import { RemoteDirectory } from "../../models/RemoteDirectory";
 import Folder from "./Folder";
+import { cx } from "@linaria/core";
 
 export interface FolderTreeProps {
   locationId: string;
@@ -12,11 +12,6 @@ export interface FolderTreeProps {
   className?: string;
   style?: React.CSSProperties;
 }
-
-const Container = styled.ul`
-  list-style: none;
-  padding-left: 0;
-`;
 
 export default function FolderTree({
   className,
@@ -41,7 +36,7 @@ export default function FolderTree({
   }, [locationId]);
 
   return (
-    <Container className={className} style={style}>
+    <ul className={cx("list-none pl-0", className)} style={style}>
       {childDirs.map((dir) => (
         <Folder
           key={dir.path}
@@ -51,6 +46,6 @@ export default function FolderTree({
           onPathChanged={onPathChanged}
         />
       ))}
-    </Container>
+    </ul>
   );
 }

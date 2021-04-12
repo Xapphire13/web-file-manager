@@ -9,9 +9,6 @@ import useWindowSize from "../hooks/useWindowSize";
 import LocationSelector from "./LocationSelector";
 
 const Container = styled.div`
-  height: 100vh;
-  width: 100vw;
-  display: grid;
   grid-template-areas:
     "breadcrumbs"
     "locationSelector"
@@ -31,7 +28,6 @@ const StyledBreadcrumbs = styled(Breadcrumbs)`
 `;
 const StyledLocationList = styled(LocationList)`
   grid-area: locationList;
-  margin: 0;
 `;
 const StyledFolderView = styled(FolderView)`
   grid-area: folderView;
@@ -76,7 +72,7 @@ export default function App() {
   };
 
   return (
-    <Container className="bg-gray-700 text-white">
+    <Container className="bg-gray-700 text-white w-screen h-screen grid">
       <StyledBreadcrumbs
         className="border-gray-400 border border-t-0 border-l-0 border-r-0"
         path={selectedPath}
@@ -85,7 +81,7 @@ export default function App() {
 
       {breakpoints.mediumAndAbove ? (
         <StyledLocationList
-          className="bg-gray-800"
+          className="bg-gray-800 m-0"
           locationId={selectedLocationId}
           path={selectedPath}
           onLocationChanged={handleLocationChanged}

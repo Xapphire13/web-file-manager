@@ -20,17 +20,7 @@ export interface FolderViewProps {
   style?: React.CSSProperties;
 }
 
-const FileList = styled.ul`
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-`;
-
 const ColumnHeaders = styled.div`
-  display: grid;
-  align-items: center;
-  font-weight: bold;
-  column-gap: ${Theme.spacing.tiny}px;
   grid-template-columns: 40px 1fr 150px 100px 5px;
 `;
 
@@ -65,19 +55,19 @@ export default function FolderView({
   };
 
   return (
-    <div className={cx(className, "p-3")} style={style}>
+    <div className={cx("p-3", className)} style={style}>
       {files && (
         <>
           <div className="bg-gray-800 shadow rounded-lg p-2 text-gray-500">
             Search files...
           </div>
-          <ColumnHeaders className="border border-gray-300 border-l-0 border-r-0 border-t-0">
+          <ColumnHeaders className="border border-gray-300 border-l-0 border-r-0 border-t-0 grid items-center font-bold gap-1">
             <div />
             <div>Name</div>
             <div>Last Modified</div>
             <div>Size</div>
           </ColumnHeaders>
-          <FileList>
+          <ul className="list-none pl-0 m-0">
             {path !== "/" && (
               <FolderViewRow
                 onPress={handleGoToParentFolder}
@@ -94,7 +84,7 @@ export default function FolderView({
                 file={file}
               />
             ))}
-          </FileList>
+          </ul>
         </>
       )}
     </div>

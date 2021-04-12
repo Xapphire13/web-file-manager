@@ -1,5 +1,4 @@
-import { styled } from "@linaria/react";
-import { cx } from "@linaria/core";
+import { css, cx } from "@linaria/core";
 import React from "react";
 
 export interface PressableProps {
@@ -10,18 +9,11 @@ export interface PressableProps {
   fullWidth?: boolean;
 }
 
-const Container = styled.button<{
-  fullWidth?: boolean;
-}>`
-  background: none;
-  border: none;
-  width: ${({ fullWidth }) => (fullWidth ? "100%" : "unset")};
+const textAlign = css`
   text-align: unset;
+`;
 
-  :hover {
-    cursor: pointer;
-  }
-
+const disableOutline = css`
   :hover:active {
     outline: none;
   }
@@ -45,13 +37,18 @@ export default function Pressable({
   };
 
   return (
-    <Container
-      className={cx("p-0", className)}
+    <button
+      className={cx(
+        "p-0 bg-none border-none cursor-pointer",
+        fullWidth && "w-full",
+        textAlign,
+        disableOutline,
+        className
+      )}
       style={style}
       onClick={handleOnPress}
-      fullWidth={fullWidth}
     >
       {children}
-    </Container>
+    </button>
   );
 }

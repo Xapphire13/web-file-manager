@@ -8,6 +8,9 @@ module.exports = {
       colors: {
         gray: colors.gray,
       },
+      screens: {
+        "hover-hover": { raw: "(hover: hover)" },
+      },
     },
   },
   variants: {

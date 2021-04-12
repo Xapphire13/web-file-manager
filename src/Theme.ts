@@ -1,6 +1,9 @@
 const breakpoints = {
-  medium: 641,
-  large: 1008,
+  small: 640,
+  medium: 768,
+  large: 1024,
+  xlarge: 1280,
+  xxlarge: 1536,
 };
 
 export default {
