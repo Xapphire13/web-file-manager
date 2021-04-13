@@ -1,10 +1,11 @@
 import { css, cx } from "@linaria/core";
 import React from "react";
+import StyleableProps from "../../types/StyleableProps";
 
-export interface PressableProps {
+export interface PressableProps
+  extends StyleableProps,
+    React.ComponentProps<"button"> {
   children?: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
   onPress?: () => void;
   fullWidth?: boolean;
 }
@@ -25,6 +26,7 @@ export default function Pressable({
   className,
   style,
   fullWidth,
+  ...rest
 }: PressableProps) {
   const handleOnPress: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
     onPress?.();
@@ -47,6 +49,7 @@ export default function Pressable({
       )}
       style={style}
       onClick={handleOnPress}
+      {...rest}
     >
       {children}
     </button>

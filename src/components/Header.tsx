@@ -15,7 +15,7 @@ export default function Header({ className, style }: HeaderProps) {
 
   return (
     <div
-      className={cx("flex flex-row items-center gap-2 px-3", className)}
+      className={cx("flex flex-row items-center px-3 py-1", className)}
       style={style}
     >
       <Breadcrumbs
@@ -23,8 +23,8 @@ export default function Header({ className, style }: HeaderProps) {
         path={currentPath}
         onPathChanged={setCurrentPath}
       />
-      <IconButton icon={<Plus />} />
-      <IconButton icon={<Settings />} />
+      <IconButton label="New" icon={<Plus />} />
+      <IconButton label="Settings" icon={<Settings />} />
     </div>
   );
 }

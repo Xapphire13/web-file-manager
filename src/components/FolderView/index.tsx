@@ -9,6 +9,8 @@ import ColumnHeaders from "./parts/ColumnHeaders";
 import SwipeableRow from "../SwipeableRow";
 import SwipeableRowContent from "../SwipeableRow/parts/SwipeableRowContent";
 import Pressable from "../core/Pressable";
+import isNonNull from "../../utils/isNonNull";
+import SelectionContextBar from "./parts/SelectionContextBar";
 
 export interface FolderViewProps {
   locationId: string | undefined;
@@ -30,6 +32,15 @@ export default function FolderView({
   const [selectedFiles, setSelectedFiles] = useState<Record<string, boolean>>(
     {}
   );
+  const selectedFilesArr = Object.keys(selectedFiles)
+    .reduce(
+      (acc, curr) =>
+        selectedFiles[curr]
+          ? [...acc, files?.find(({ path }) => path === curr)]
+          : acc,
+      [] as (RemoteFile | undefined)[]
+    )
+    .filter(isNonNull);
 
   useEffect(() => {
     const getFiles = async (locationId: string) => {
@@ -79,7 +90,7 @@ export default function FolderView({
   };
 
   return (
-    <div className={cx("p-3", className)} style={style}>
+    <div className={cx("p-3 relative", className)} style={style}>
       {files && (
         <>
           <div className="bg-gray-800 shadow rounded-lg p-2 text-gray-500 mb-2">
@@ -111,6 +122,13 @@ export default function FolderView({
               />
             ))}
           </ul>
+        </>
+      )}
+      {selectedFilesArr.length > 0 && (
+        <>
+          <div className="absolute bottom-3 left-0 right-0 text-center">
+            <SelectionContextBar selectedFiles={selectedFilesArr} />
+          </div>
         </>
       )}
     </div>
