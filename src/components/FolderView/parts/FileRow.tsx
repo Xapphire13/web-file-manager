@@ -26,7 +26,7 @@ export default function FileRow({
   onSelectedChange,
 }: FileRowProps) {
   return (
-    <li className="odd:bg-gray-700 even:bg-gray-800 rounded-lg block overflow-hidden">
+    <li className="odd:bg-gray-700 even:bg-gray-800 rounded-lg block overflow-hidden hover-hover:hover:bg-gray-400">
       <SwipeableRow className="py-1">
         <SwipeableRowContent>
           <div className="flex items-center gap-2 pl-2">

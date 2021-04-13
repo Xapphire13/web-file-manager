@@ -4,6 +4,10 @@ import { RemoteLocation } from "../models/RemoteLocation";
 import Pressable from "./core/Pressable";
 import FolderTree from "./FolderTree";
 import { cx } from "@linaria/core";
+import { ChevronDown } from "react-feather";
+import { animated } from "@react-spring/web";
+import { useSpring } from "react-spring";
+import useMeasure from "react-use-measure";
 
 export interface LocationListProps {
   locationId: string | undefined;
@@ -14,6 +18,8 @@ export interface LocationListProps {
   style?: React.CSSProperties;
 }
 
+const AnimatedChevronDown = animated(ChevronDown);
+
 export default function LocationList({
   locationId,
   onLocationChanged,
@@ -23,6 +29,10 @@ export default function LocationList({
   style,
 }: LocationListProps) {
   const [locations, setLocations] = useState<RemoteLocation[]>([]);
+  const [expanded, setExpanded] = useState(true);
+  const { rotation: chevronRotation } = useSpring({
+    rotation: expanded ? 0 : -180,
+  });
 
   useEffect(() => {
     const load = async () => {
@@ -40,6 +50,8 @@ export default function LocationList({
 
   const handleLocationLabelPressed = () => {
     onPathChanged("/");
+
+    setExpanded((prev) => !prev);
   };
 
   return (
@@ -47,18 +59,27 @@ export default function LocationList({
       {locations.map(({ id, name }) => (
         <li key={id}>
           <Pressable
-            className="text-lg"
+            className="text-lg flex"
             onPress={handleLocationLabelPressed}
             fullWidth
           >
-            <div>{name}</div>
+            <div className="flex-grow">{name}</div>
+            <AnimatedChevronDown
+              style={{
+                transform: chevronRotation.to(
+                  (r) => `rotate3d(0,0,1, ${r}deg)`
+                ),
+              }}
+            />
           </Pressable>
-          <FolderTree
-            className="ml-5"
-            locationId={id}
-            path={path}
-            onPathChanged={onPathChanged}
-          />
+          {expanded && (
+            <FolderTree
+              className="ml-5"
+              locationId={id}
+              path={path}
+              onPathChanged={onPathChanged}
+            />
+          )}
         </li>
       ))}
     </ul>

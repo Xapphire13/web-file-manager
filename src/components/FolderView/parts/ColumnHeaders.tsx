@@ -19,7 +19,7 @@ export default function ColumnHeaders({
       />
       <div className="flex-grow">Name</div>
       <div className="w-24">Size</div>
-      <div className="w-32">Modified</div>
+      <div className="w-32 mr-10">Modified</div>
     </div>
   );
 }

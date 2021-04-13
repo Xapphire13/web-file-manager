@@ -104,17 +104,18 @@ export default function FolderView({
 
           <ul className="list-none pl-0 m-0 mt-2">
             {path !== "/" && (
-              <SwipeableRow>
-                <SwipeableRowContent>
-                  <Pressable
-                    className="py-1"
-                    style={{ marginLeft: 75 }}
-                    onPress={handleGoToParentFolder}
-                  >
-                    Parent folder...
-                  </Pressable>
-                </SwipeableRowContent>
-              </SwipeableRow>
+              <li className="block">
+                <SwipeableRow className="hover-hover:hover:bg-gray-400 rounded-lg py-2">
+                  <SwipeableRowContent>
+                    <Pressable
+                      style={{ marginLeft: 75 }}
+                      onPress={handleGoToParentFolder}
+                    >
+                      Parent folder...
+                    </Pressable>
+                  </SwipeableRowContent>
+                </SwipeableRow>
+              </li>
             )}
             {files.map((file) => (
               <FileRow

@@ -17,6 +17,8 @@ module.exports = {
   variants: {
     extend: {
       backgroundColor: ["odd", "even"],
+      filter: ["hover"],
+      brightness: ["hover"],
     },
   },
   plugins: [],
