@@ -1,76 +1,25 @@
-import { styled } from "@linaria/react";
 import { useSpring, animated } from "react-spring";
 import React, { useState } from "react";
-import Theme from "../../Theme";
-import SwipeableRowHiddenContent from "./SwipeableRowHiddenContent";
-import SwipeableRowContent from "./SwipeableRowContent";
+import SwipeableRowHiddenContent from "./parts/SwipeableRowHiddenContent";
+import SwipeableRowContent from "./parts/SwipeableRowContent";
 import assertIsOfType from "../../utils/assertIsOfType";
 import useMeasure from "react-use-measure";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import { useSwipeable } from "react-swipeable";
-
-const Container = styled.div`
-  position: relative;
-  overflow: hidden;
-`;
-
-const HiddenContentContainer = styled.div<{
-  side: "left" | "right";
-  hidden: boolean;
-}>`
-  position: absolute;
-  left: ${({ side }) => (side === "left" ? 0 : "unset")};
-  right: ${({ side }) => (side === "right" ? 0 : "unset")};
-  top: 0;
-  bottom: 0;
-  background-color: ${Theme.palette.gray5};
-  display: flex;
-  visibility: ${({ hidden }) => (hidden ? "hidden" : "unset")};
-
-  &.swipeablerow-left-hidden-content-container {
-    background-color: blue;
-  }
-
-  &.swipeablerow-right-hidden-content-container {
-    background-color: red;
-  }
-`;
-
-// @ts-expect-error Type conflict between styled<>animated
-const SwipeSurface = styled(animated.div)`
-  position: relative;
-  background-color: ${Theme.palette.gray3};
-  display: flex;
-`;
-
-const ContentContainer = styled.div`
-  flex-grow: 1;
-`;
-
-const ActionHoverTarget = styled.div<{ side: "left" | "right" }>`
-  display: flex;
-  align-items: center;
-  justify-content: ${({ side }) =>
-    side === "left" ? "flex-start" : "flex-end"};
-  width: 20px;
-  overflow: hidden;
-`;
-
-const ActionHoverTargetSymbol = styled.div<{ side: "left" | "right" }>`
-  position: relative;
-  left: ${({ side }) => (side === "left" ? "-4px" : "unset")};
-  right: ${({ side }) => (side === "right" ? "-4px" : "unset")};
-  height: 10px;
-  width: 10px;
-  background-color: ${Theme.palette.white};
-  transform: rotate(45deg);
-`;
+import { cx } from "@linaria/core";
 
 export interface SwipeableRowProps {
   children: React.ReactNode;
+
+  className?: string;
+  style?: React.CSSProperties;
 }
 
-export default function SwipeableRow({ children }: SwipeableRowProps) {
+export default function SwipeableRow({
+  children,
+  className,
+  style,
+}: SwipeableRowProps) {
   const [leftHiddenRef, leftHiddenBounds] = useMeasure();
   const [rightHiddenRef, rightHiddenBounds] = useMeasure();
   const [slideRestPosition, setSlideRestPosition] = useState(0);
@@ -81,14 +30,14 @@ export default function SwipeableRow({ children }: SwipeableRowProps) {
   const [swipeDistance, setSwipeDistance] = useState(0);
   const swipeHandlers = useSwipeable({
     onSwiping: ({ deltaX }) => {
-      // LEFT
+      // Swiping left
       if (deltaX < 0) {
         setSwipeDistance(
-          Math.max(slideRestPosition + deltaX, -rightHiddenBounds.width - 10)
+          Math.min(slideRestPosition + deltaX, -rightHiddenBounds.width - 10)
         );
       } else {
         setSwipeDistance(
-          Math.min(slideRestPosition + deltaX, leftHiddenBounds.width + 10)
+          Math.max(slideRestPosition + deltaX, leftHiddenBounds.width + 10)
         );
       }
     },
@@ -158,48 +107,58 @@ export default function SwipeableRow({ children }: SwipeableRowProps) {
   );
   const swipeProps = swipeDistance ? { left: swipeDistance } : {};
   const swipeSurfaceStyle = { ...springProps, ...swipeProps };
+  const showLeftHiddenContent =
+    slideDirection === "right" || swipeSurfaceStyle.left > 0;
+  const showRightHiddenContent =
+    slideDirection === "left" || swipeSurfaceStyle.left < 0;
 
   return (
-    <Container onMouseLeave={() => setSlideDirection("none")}>
-      <HiddenContentContainer
+    <div
+      className={cx("relative overflow-hidden bg-inherit", className)}
+      style={style}
+      onMouseLeave={() => setSlideDirection("none")}
+    >
+      <div
         ref={leftHiddenRef}
-        className="swipeablerow-left-hidden-content-container"
-        side="left"
-        hidden={slideDirection !== "right" && swipeSurfaceStyle.left <= 0}
+        className={cx(
+          "swipeablerow-left-hidden-content-container absolute top-0 bottom-0 left-0 flex",
+          !showLeftHiddenContent && "hidden"
+        )}
       >
         {leftHiddenContent}
-      </HiddenContentContainer>
-      <HiddenContentContainer
+      </div>
+      <div
         ref={rightHiddenRef}
-        className="swipeablerow-right-hidden-content-container"
-        side="right"
-        hidden={slideDirection !== "left" && swipeSurfaceStyle.left >= 0}
+        className={cx(
+          "swipeablerow-right-hidden-content-container absolute top-0 bottom-0 right-0 flex",
+          !showRightHiddenContent && "hidden"
+        )}
       >
         {rightHiddenContent}
-      </HiddenContentContainer>
-      <SwipeSurface
-        className="swipeablerow-swipe-surface"
+      </div>
+      <animated.div
+        className="swipeablerow-swipe-surface relative flex bg-inherit"
         style={{ ...springProps, ...swipeProps }}
         {...swipeHandlers}
       >
         {hasFinePointer && leftHiddenContent && (
-          <ActionHoverTarget
-            side="left"
+          <div
+            className="flex items-center justify-start w-10 overflow-hidden"
             onMouseEnter={() => setSlideDirection("right")}
           >
-            <ActionHoverTargetSymbol side="left" />
-          </ActionHoverTarget>
+            <div className="relative -left-2 h-3 w-3 bg-white transform-gpu rotate-45" />
+          </div>
         )}
-        <ContentContainer>{content}</ContentContainer>
+        <div className="flex-grow">{content}</div>
         {hasFinePointer && rightHiddenContent && (
-          <ActionHoverTarget
-            side="right"
+          <div
+            className="flex items-center justify-end w-10 overflow-hidden"
             onMouseEnter={() => setSlideDirection("left")}
           >
-            <ActionHoverTargetSymbol side="right" />
-          </ActionHoverTarget>
+            <div className="relative -right-2 h-3 w-3 bg-white transform-gpu rotate-45" />
+          </div>
         )}
-      </SwipeSurface>
-    </Container>
+      </animated.div>
+    </div>
   );
 }

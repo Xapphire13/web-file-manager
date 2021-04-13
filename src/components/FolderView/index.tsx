@@ -5,8 +5,10 @@ import { RemoteDirectory } from "../../models/RemoteDirectory";
 import { RemoteFile } from "../../models/RemoteFile";
 import FileRow from "./parts/FileRow";
 import pathUtil from "path";
-import FolderViewRow from "./parts/FolderViewRow";
 import ColumnHeaders from "./parts/ColumnHeaders";
+import SwipeableRow from "../SwipeableRow";
+import SwipeableRowContent from "../SwipeableRow/parts/SwipeableRowContent";
+import Pressable from "../core/Pressable";
 
 export interface FolderViewProps {
   locationId: string | undefined;
@@ -24,6 +26,10 @@ export default function FolderView({
   style,
 }: FolderViewProps) {
   const [files, setFiles] = useState<RemoteFile[]>();
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, boolean>>(
+    {}
+  );
 
   useEffect(() => {
     const getFiles = async (locationId: string) => {
@@ -46,6 +52,32 @@ export default function FolderView({
     onPathChanged(pathUtil.resolve(path, ".."));
   };
 
+  const handleToggleSelectAll = (newValue: boolean) => {
+    setSelectAll(newValue);
+
+    if (newValue) {
+      setSelectedFiles(
+        files?.reduce((acc, curr) => ({ ...acc, [curr.path]: true }), {}) ?? {}
+      );
+    } else {
+      setSelectedFiles({});
+    }
+  };
+
+  const handleFileSelectedChange = (path: string, selected: boolean) => {
+    setSelectedFiles((prev) => {
+      const newValue = {
+        ...prev,
+        [path]: selected,
+      };
+
+      const allSelected = files?.every(({ path }) => newValue[path]) ?? false;
+      setSelectAll(allSelected);
+
+      return newValue;
+    });
+  };
+
   return (
     <div className={cx("p-3", className)} style={style}>
       {files && (
@@ -54,23 +86,28 @@ export default function FolderView({
             Search files...
           </div>
 
-          <ColumnHeaders />
+          <ColumnHeaders
+            selectAll={selectAll}
+            onToggleSelectAll={handleToggleSelectAll}
+          />
 
           <ul className="list-none pl-0 m-0 mt-2">
             {path !== "/" && (
-              <FolderViewRow
-                onPress={handleGoToParentFolder}
-                gridTemplateColumns="40px 1fr"
-              >
-                <div />
-                <div>..</div>
-              </FolderViewRow>
+              <SwipeableRow>
+                <SwipeableRowContent>
+                  <Pressable onPress={handleGoToParentFolder}>..</Pressable>
+                </SwipeableRowContent>
+              </SwipeableRow>
             )}
             {files.map((file) => (
               <FileRow
                 key={file.path}
                 onPress={() => handleOnFilePressed(file)}
                 file={file}
+                selected={selectedFiles[file.path]}
+                onSelectedChange={(newValue) =>
+                  handleFileSelectedChange(file.path, newValue)
+                }
               />
             ))}
           </ul>
