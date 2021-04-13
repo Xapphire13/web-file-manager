@@ -9,6 +9,8 @@ import SwipeableRowContent from "../../SwipeableRow/parts/SwipeableRowContent";
 import SelectToggle from "./SelectToggle";
 import Pressable from "../../core/Pressable";
 import SwipeableRowHiddenContent from "../../SwipeableRow/parts/SwipeableRowHiddenContent";
+import SwipeButton from "./SwipeButton";
+import { Download, Move, Trash, Upload } from "react-feather";
 
 export interface FileRowProps {
   file: RemoteFile;
@@ -44,7 +46,20 @@ export default function FileRow({
             </div>
           </div>
         </SwipeableRowContent>
-        <SwipeableRowHiddenContent side="right">Test</SwipeableRowHiddenContent>
+        <SwipeableRowHiddenContent side="right">
+          <SwipeButton
+            className="bg-purple-500"
+            icon={<Upload />}
+            label="Share"
+          />
+          <SwipeButton
+            className="bg-indigo-500"
+            icon={<Download />}
+            label="Download"
+          />
+          <SwipeButton className="bg-blue-500" icon={<Move />} label="Move" />
+          <SwipeButton className="bg-red-500" icon={<Trash />} label="Delete" />
+        </SwipeableRowHiddenContent>
       </SwipeableRow>
     </li>
   );

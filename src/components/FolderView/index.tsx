@@ -106,7 +106,13 @@ export default function FolderView({
             {path !== "/" && (
               <SwipeableRow>
                 <SwipeableRowContent>
-                  <Pressable onPress={handleGoToParentFolder}>..</Pressable>
+                  <Pressable
+                    className="py-1"
+                    style={{ marginLeft: 75 }}
+                    onPress={handleGoToParentFolder}
+                  >
+                    Parent folder...
+                  </Pressable>
                 </SwipeableRowContent>
               </SwipeableRow>
             )}

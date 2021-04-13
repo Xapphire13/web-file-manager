@@ -33,11 +33,11 @@ export default function SwipeableRow({
       // Swiping left
       if (deltaX < 0) {
         setSwipeDistance(
-          Math.min(slideRestPosition + deltaX, -rightHiddenBounds.width - 10)
+          Math.max(slideRestPosition + deltaX, -rightHiddenBounds.width - 10)
         );
       } else {
         setSwipeDistance(
-          Math.max(slideRestPosition + deltaX, leftHiddenBounds.width + 10)
+          Math.min(slideRestPosition + deltaX, leftHiddenBounds.width + 10)
         );
       }
     },
@@ -114,7 +114,7 @@ export default function SwipeableRow({
 
   return (
     <div
-      className={cx("relative overflow-hidden bg-inherit", className)}
+      className={cx("relative overflow-hidden bg-inherit")}
       style={style}
       onMouseLeave={() => setSlideDirection("none")}
     >
@@ -137,7 +137,10 @@ export default function SwipeableRow({
         {rightHiddenContent}
       </div>
       <animated.div
-        className="swipeablerow-swipe-surface relative flex bg-inherit"
+        className={cx(
+          "swipeablerow-swipe-surface relative flex bg-inherit",
+          className
+        )}
         style={{ ...springProps, ...swipeProps }}
         {...swipeHandlers}
       >
