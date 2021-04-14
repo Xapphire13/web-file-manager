@@ -11,6 +11,7 @@ import SwipeableRowContent from "../SwipeableRow/parts/SwipeableRowContent";
 import Pressable from "../core/Pressable";
 import isNonNull from "../../utils/isNonNull";
 import SelectionContextBar from "./parts/SelectionContextBar";
+import SearchBox from "./parts/SearchBox";
 
 export interface FolderViewProps {
   locationId: string | undefined;
@@ -93,9 +94,7 @@ export default function FolderView({
     <div className={cx("p-3 relative", className)} style={style}>
       {files && (
         <>
-          <div className="bg-gray-800 shadow rounded-lg p-2 text-gray-500 mb-2">
-            Search files...
-          </div>
+          <SearchBox />
 
           <ColumnHeaders
             selectAll={selectAll}
@@ -105,7 +104,7 @@ export default function FolderView({
           <ul className="list-none pl-0 m-0 mt-2">
             {path !== "/" && (
               <li className="block">
-                <SwipeableRow className="rounded-lg py-2">
+                <SwipeableRow className="rounded-lg py-2 px-0.5">
                   <SwipeableRowContent>
                     <Pressable
                       style={{ paddingLeft: 75 }}
