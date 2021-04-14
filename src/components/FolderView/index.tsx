@@ -105,11 +105,12 @@ export default function FolderView({
           <ul className="list-none pl-0 m-0 mt-2">
             {path !== "/" && (
               <li className="block">
-                <SwipeableRow className="hover-hover:hover:bg-gray-400 rounded-lg py-2">
+                <SwipeableRow className="rounded-lg py-2">
                   <SwipeableRowContent>
                     <Pressable
-                      style={{ marginLeft: 75 }}
+                      style={{ paddingLeft: 75 }}
                       onPress={handleGoToParentFolder}
+                      fullWidth
                     >
                       Parent folder...
                     </Pressable>

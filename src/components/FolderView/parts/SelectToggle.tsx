@@ -24,7 +24,7 @@ export default function SelectToggle({
     <div
       className={cx(
         "w-5 h-5  rounded-full flex justify-center items-center border",
-        !selected && "bg-gray-800 border-gray-600 text-gray-600",
+        !selected && "bg-gray-800 border-gray-500 text-gray-500",
         selected && "bg-blue-500 border-white text-white",
         className
       )}
