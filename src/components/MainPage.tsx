@@ -35,7 +35,7 @@ const StyledFolderView = styled(FolderView)`
 export default function MainPage() {
   const {
     currentPath,
-    locationId,
+    currentLocation,
     locations,
     setCurrentPath,
     setLocationId,
@@ -57,7 +57,7 @@ export default function MainPage() {
       {breakpoints.mediumAndAbove && (
         <StyledLocationList
           className="bg-gray-800 m-0"
-          locationId={locationId}
+          locationId={currentLocation?.id}
           locations={locations}
           path={currentPath}
           onLocationChanged={handleLocationChanged}
@@ -66,7 +66,7 @@ export default function MainPage() {
       )}
 
       <StyledFolderView
-        locationId={locationId}
+        locationId={currentLocation?.id}
         path={currentPath}
         onPathChanged={handleOnPathChanged}
       />

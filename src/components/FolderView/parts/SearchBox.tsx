@@ -41,7 +41,7 @@ export default function SearchBox() {
         onChange={handleOnChange}
         value={query}
       />
-      <div ref={actionsRef} className="px-2">
+      <div ref={actionsRef} className="pl-4">
         <TertiaryButton disabled={!showActions} onPress={handleCancelPressed}>
           Cancel
         </TertiaryButton>

@@ -5,7 +5,7 @@ import { RemoteLocation } from "../models/RemoteLocation";
 
 export const CurrentPathContext = React.createContext({
   locations: [] as RemoteLocation[],
-  locationId: undefined as string | undefined,
+  currentLocation: undefined as RemoteLocation | undefined,
   currentPath: "/",
   setLocationId: (locationId: string) => {},
   setCurrentPath: (path: string) => {},
@@ -20,7 +20,7 @@ export default function CurrentPathProvider({
   const [currentPath, setCurrentPath] = useState("/");
   const contextValue = useMemo<React.ContextType<typeof CurrentPathContext>>(
     () => ({
-      locationId,
+      currentLocation: locations.find((it) => it.id === locationId),
       currentPath,
       locations,
       setCurrentPath,
