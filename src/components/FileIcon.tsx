@@ -14,13 +14,14 @@ import {
 export interface FileIconProps {
   filename: string;
   isFolder?: boolean;
+  size?: number;
 }
 
-export default function FileIcon({ filename, isFolder }: FileIconProps) {
+export default function FileIcon({ filename, isFolder, size }: FileIconProps) {
   const mimeType = mime.lookup(filename);
   const icon = (() => {
     const props: IconProps = {
-      size: 32,
+      size: size ?? 32,
     };
 
     if (isFolder) {

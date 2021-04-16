@@ -2,17 +2,14 @@ import { styled } from "@linaria/react";
 import React, { useEffect, useState } from "react";
 import FolderView from "./FolderView";
 import Theme from "../Theme";
-import { useHistory, useLocation } from "react-router";
 import LocationList from "./LocationList";
 import useWindowSize from "../hooks/useWindowSize";
-import LocationSelector from "./LocationSelector";
 import Header from "./Header";
 import useCurrentPath from "../hooks/useCurrentPath";
 
 const Container = styled.div`
   grid-template-areas:
     "header"
-    "locationSelector"
     "folderView";
   grid-template-rows: auto auto 1fr;
   grid-template-columns: 100%;
@@ -34,40 +31,16 @@ const StyledLocationList = styled(LocationList)`
 const StyledFolderView = styled(FolderView)`
   grid-area: folderView;
 `;
-const StyledLocationSelector = styled(LocationSelector)`
-  grid-area: locationSelector;
-`;
 
 export default function MainPage() {
-  const location = useLocation();
-  const history = useHistory();
   const {
     currentPath,
     locationId,
+    locations,
     setCurrentPath,
     setLocationId,
   } = useCurrentPath();
   const { breakpoints } = useWindowSize();
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-
-    const folderPath = queryParams.get("folder");
-    if (folderPath) {
-      setCurrentPath(folderPath);
-    }
-  }, []);
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-
-    locationId && queryParams.set("location", locationId);
-    currentPath && queryParams.set("folder", currentPath);
-
-    history.replace({
-      search: `${queryParams.toString()}`,
-    });
-  }, [locationId, currentPath]);
 
   const handleLocationChanged = (newLocationId: string) => {
     setLocationId(newLocationId);
@@ -81,18 +54,14 @@ export default function MainPage() {
     <Container className="grid h-full w-full">
       <StyledHeader className="border-gray-400 border border-t-0 border-l-0 border-r-0" />
 
-      {breakpoints.mediumAndAbove ? (
+      {breakpoints.mediumAndAbove && (
         <StyledLocationList
           className="bg-gray-800 m-0"
           locationId={locationId}
+          locations={locations}
           path={currentPath}
           onLocationChanged={handleLocationChanged}
           onPathChanged={handleOnPathChanged}
-        />
-      ) : (
-        <StyledLocationSelector
-          locationId={locationId}
-          onLocationChanged={handleLocationChanged}
         />
       )}
 

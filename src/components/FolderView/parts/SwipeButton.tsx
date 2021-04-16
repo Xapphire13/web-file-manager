@@ -19,7 +19,7 @@ export default function SwipeButton({
   return (
     <Pressable
       className={cx(
-        "flex items-center justify-center p-2 rounded-none hover-hover:hover:filter hover-hover:hover:brightness-125",
+        "flex items-center justify-center py-2 px-4 md:px-2 rounded-none hover-hover:hover:filter hover-hover:hover:brightness-125",
         className
       )}
       style={style}

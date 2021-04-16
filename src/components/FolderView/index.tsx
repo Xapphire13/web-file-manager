@@ -12,6 +12,7 @@ import Pressable from "../core/Pressable";
 import isNonNull from "../../utils/isNonNull";
 import SelectionContextBar from "./parts/SelectionContextBar";
 import SearchBox from "./parts/SearchBox";
+import useWindowSize from "../../hooks/useWindowSize";
 
 export interface FolderViewProps {
   locationId: string | undefined;
@@ -33,6 +34,7 @@ export default function FolderView({
   const [selectedFiles, setSelectedFiles] = useState<Record<string, boolean>>(
     {}
   );
+  const { breakpoints } = useWindowSize();
   const selectedFilesArr = Object.keys(selectedFiles)
     .reduce(
       (acc, curr) =>
@@ -96,13 +98,15 @@ export default function FolderView({
         <>
           <SearchBox />
 
-          <ColumnHeaders
-            selectAll={selectAll}
-            onToggleSelectAll={handleToggleSelectAll}
-          />
+          {breakpoints.mediumAndAbove && (
+            <ColumnHeaders
+              selectAll={selectAll}
+              onToggleSelectAll={handleToggleSelectAll}
+            />
+          )}
 
           <ul className="list-none pl-0 m-0 mt-2">
-            {path !== "/" && (
+            {breakpoints.mediumAndAbove && path !== "/" && (
               <li className="block">
                 <SwipeableRow className="rounded-lg py-2 px-0.5">
                   <SwipeableRowContent>

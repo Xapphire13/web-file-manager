@@ -19,6 +19,7 @@ module.exports = {
       backgroundColor: ["odd", "even"],
       filter: ["hover"],
       brightness: ["hover"],
+      borderWidth: ["last"],
     },
   },
   plugins: [],

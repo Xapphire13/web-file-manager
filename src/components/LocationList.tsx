@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { loadLocations } from "../Api";
 import { RemoteLocation } from "../models/RemoteLocation";
 import Pressable from "./core/Pressable";
 import FolderTree from "./FolderTree";
@@ -7,9 +6,9 @@ import { cx } from "@linaria/core";
 import { ChevronDown } from "react-feather";
 import { animated } from "@react-spring/web";
 import { useSpring } from "react-spring";
-import useMeasure from "react-use-measure";
 
 export interface LocationListProps {
+  locations: RemoteLocation[];
   locationId: string | undefined;
   path: string;
   onLocationChanged: (locationId: string) => void;
@@ -22,37 +21,28 @@ const AnimatedChevronDown = animated(ChevronDown);
 
 export default function LocationList({
   locationId,
+  locations,
   onLocationChanged,
   path,
   onPathChanged,
   className,
   style,
 }: LocationListProps) {
-  const [locations, setLocations] = useState<RemoteLocation[]>([]);
   const [expanded, setExpanded] = useState(true);
   const { rotation: chevronRotation } = useSpring({
     rotation: expanded ? 0 : -180,
   });
 
-  useEffect(() => {
-    const load = async () => {
-      const result = await loadLocations();
-      setLocations(result);
-
-      if (!locationId) {
-        onLocationChanged(result[0].id);
-        onPathChanged("/");
-      }
-    };
-
-    load();
-  }, []);
-
-  const handleLocationLabelPressed = () => {
+  const handleLocationLabelPressed = (newLocationId: string) => {
+    onLocationChanged(newLocationId);
     onPathChanged("/");
 
     setExpanded((prev) => !prev);
   };
+
+  useEffect(() => {
+    setExpanded(true);
+  }, [locationId]);
 
   return (
     <ul className={cx("list-none px-3 py-2", className)} style={style}>
@@ -60,7 +50,7 @@ export default function LocationList({
         <li key={id}>
           <Pressable
             className="text-lg flex"
-            onPress={handleLocationLabelPressed}
+            onPress={() => handleLocationLabelPressed(id)}
             fullWidth
           >
             <div className="flex-grow">{name}</div>

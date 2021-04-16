@@ -11,6 +11,8 @@ import Pressable from "../../core/Pressable";
 import SwipeableRowHiddenContent from "../../SwipeableRow/parts/SwipeableRowHiddenContent";
 import SwipeButton from "./SwipeButton";
 import { Download, Move, Trash, Upload } from "react-feather";
+import useWindowSize from "../../../hooks/useWindowSize";
+import { cx } from "@linaria/core";
 
 export interface FileRowProps {
   file: RemoteFile;
@@ -25,26 +27,55 @@ export default function FileRow({
   selected,
   onSelectedChange,
 }: FileRowProps) {
+  const { breakpoints } = useWindowSize();
+
   return (
-    <li className="odd:bg-gray-700 even:bg-gray-800 rounded-lg block overflow-hidden">
+    <li
+      className={cx(
+        "md:odd:bg-gray-700 md:even:bg-gray-800 md:rounded-lg block overflow-hidden",
+        !breakpoints.mediumAndAbove &&
+          "bg-gray-700 last:border-0 border border-gray-500 border-t-0 border-l-0 border-r-0"
+      )}
+    >
       <SwipeableRow className="py-1">
         <SwipeableRowContent>
-          <div className="flex items-center gap-2 pl-2">
-            <SelectToggle selected={selected} onChange={onSelectedChange} />
-            <FileIcon
-              filename={file.name}
-              isFolder={file instanceof RemoteDirectory}
-            />
-            <Pressable className="flex-grow" onPress={onPress}>
-              {file.name}
-            </Pressable>
-            <div className="w-24">{formatSize(file.size)}</div>
-            <div className="w-32">
-              {DateTime.fromJSDate(file.modifiedAt).toLocaleString(
-                DateTime.DATE_MED
-              )}
+          {breakpoints.mediumAndAbove && (
+            <div className="flex items-center gap-2 pl-2">
+              <SelectToggle selected={selected} onChange={onSelectedChange} />
+              <FileIcon
+                filename={file.name}
+                isFolder={file instanceof RemoteDirectory}
+              />
+              <Pressable className="flex-grow" onPress={onPress}>
+                {file.name}
+              </Pressable>
+              <div className="w-24">{formatSize(file.size)}</div>
+              <div className="w-32">
+                {DateTime.fromJSDate(file.modifiedAt).toLocaleString(
+                  DateTime.DATE_MED
+                )}
+              </div>
             </div>
-          </div>
+          )}
+
+          {!breakpoints.mediumAndAbove && (
+            <div className="flex items-center py-2">
+              <FileIcon
+                filename={file.name}
+                isFolder={file instanceof RemoteDirectory}
+                size={48}
+              />
+              <div className="ml-2">
+                <p>{file.name}</p>
+                <p className="text-xs text-gray-400">
+                  {DateTime.fromJSDate(file.modifiedAt).toLocaleString(
+                    DateTime.DATE_MED
+                  )}{" "}
+                  - {formatSize(file.size)}
+                </p>
+              </div>
+            </div>
+          )}
         </SwipeableRowContent>
         <SwipeableRowHiddenContent side="right">
           <SwipeButton
