@@ -3,10 +3,11 @@ import useCurrentPath from "../hooks/useCurrentPath";
 import Breadcrumbs from "./Breadcrumbs";
 import { css, cx } from "@linaria/core";
 import { Settings, Plus, MoreVertical, ChevronLeft } from "react-feather";
-import IconButton from "./core/IconButton";
+import IconButton, { ICON_BUTTON_CLASS } from "./core/IconButton";
 import useWindowSize from "../hooks/useWindowSize";
 import Pressable from "./core/Pressable";
 import path from "path";
+import Menu from "./core/Menu";
 
 export interface HeaderProps {
   className?: string;
@@ -44,7 +45,16 @@ export default function Header({ className, style }: HeaderProps) {
             path={currentPath}
             onPathChanged={setCurrentPath}
           />
-          <IconButton label="New" icon={<Plus />} />
+          <Menu
+            items={[
+              { id: "new-file", label: "New File", onSelect: () => {} },
+              { id: "new-folder", label: "New Folder", onSelect: () => {} },
+            ]}
+          >
+            <div className={ICON_BUTTON_CLASS}>
+              <Plus />
+            </div>
+          </Menu>
           <IconButton label="Settings" icon={<Settings />} />
         </>
       )}
@@ -62,11 +72,19 @@ export default function Header({ className, style }: HeaderProps) {
             </Pressable>
           )}
           <div className="justify-self-center font-bold">Current Folder</div>
-          <IconButton
-            label="Menu"
-            icon={<MoreVertical />}
-            className="justify-self-end"
-          />
+          <div className="justify-self-end">
+            <Menu
+              items={[
+                { id: "new-file", label: "New File", onSelect: () => {} },
+                { id: "new-folder", label: "New Folder", onSelect: () => {} },
+                { id: "settings", label: "Settings", onSelect: () => {} },
+              ]}
+            >
+              <div className={ICON_BUTTON_CLASS}>
+                <MoreVertical />
+              </div>
+            </Menu>
+          </div>
         </>
       )}
     </div>

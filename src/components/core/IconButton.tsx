@@ -9,6 +9,9 @@ export interface IconButtonProps extends StyleableProps {
   label: string;
 }
 
+export const ICON_BUTTON_CLASS =
+  "rounded-full p-2 hover-hover:hover:bg-gray-500 flex items-center justify-center";
+
 export default function IconButton({
   icon,
   onPress,
@@ -19,10 +22,7 @@ export default function IconButton({
   return (
     <Pressable
       title={label}
-      className={cx(
-        "rounded-full p-2 hover-hover:hover:bg-gray-500 flex items-center justify-center",
-        className
-      )}
+      className={cx(ICON_BUTTON_CLASS, className)}
       style={style}
       onPress={onPress}
     >

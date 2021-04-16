@@ -57,6 +57,7 @@ export async function loadDirectoryChildren(
           size: 200000,
           createdAt: new Date(),
           modifiedAt: new Date(),
+          childrenCount: 1,
         }),
       ];
     case "/test": {

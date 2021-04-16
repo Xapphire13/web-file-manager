@@ -13,6 +13,7 @@ import SwipeButton from "./SwipeButton";
 import { Download, Move, Trash, Upload } from "react-feather";
 import useWindowSize from "../../../hooks/useWindowSize";
 import { cx } from "@linaria/core";
+import safePlural from "../../../utils/safePlural";
 
 export interface FileRowProps {
   file: RemoteFile;
@@ -28,6 +29,14 @@ export default function FileRow({
   onSelectedChange,
 }: FileRowProps) {
   const { breakpoints } = useWindowSize();
+  const fileMeta =
+    file instanceof RemoteDirectory
+      ? `${file.childrenCount} ${safePlural(
+          file.childrenCount,
+          "item",
+          "items"
+        )}`
+      : null;
 
   return (
     <li
@@ -46,8 +55,14 @@ export default function FileRow({
                 filename={file.name}
                 isFolder={file instanceof RemoteDirectory}
               />
-              <Pressable className="flex-grow" onPress={onPress}>
-                {file.name}
+              <Pressable
+                className="flex-grow flex justify-between items-center"
+                onPress={onPress}
+              >
+                <div>{file.name}</div>
+                {fileMeta && (
+                  <div className="text-sm text-gray-400 pr-2">{fileMeta}</div>
+                )}
               </Pressable>
               <div className="w-24">{formatSize(file.size)}</div>
               <div className="w-32">
@@ -75,7 +90,7 @@ export default function FileRow({
                   {DateTime.fromJSDate(file.modifiedAt).toLocaleString(
                     DateTime.DATE_MED
                   )}{" "}
-                  - {formatSize(file.size)}
+                  - {fileMeta ? fileMeta : formatSize(file.size)}
                 </p>
               </div>
             </Pressable>
