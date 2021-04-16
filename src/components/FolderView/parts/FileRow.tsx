@@ -59,7 +59,11 @@ export default function FileRow({
           )}
 
           {!breakpoints.mediumAndAbove && (
-            <div className="flex items-center py-2">
+            <Pressable
+              onPress={onPress}
+              className="flex items-center py-2"
+              fullWidth
+            >
               <FileIcon
                 filename={file.name}
                 isFolder={file instanceof RemoteDirectory}
@@ -74,7 +78,7 @@ export default function FileRow({
                   - {formatSize(file.size)}
                 </p>
               </div>
-            </div>
+            </Pressable>
           )}
         </SwipeableRowContent>
         <SwipeableRowHiddenContent side="right">
