@@ -15,6 +15,7 @@ const Container = styled.div`
     "locationSelector"
     "folderView";
   grid-template-rows: auto auto 1fr;
+  grid-template-columns: 100%;
 
   ${Theme.responsive.mediumAndAbove} {
     grid-template-columns: 200px 1fr;
@@ -77,7 +78,7 @@ export default function MainPage() {
   };
 
   return (
-    <Container className="grid h-full">
+    <Container className="grid h-full w-full">
       <StyledHeader className="border-gray-400 border border-t-0 border-l-0 border-r-0" />
 
       {breakpoints.mediumAndAbove ? (

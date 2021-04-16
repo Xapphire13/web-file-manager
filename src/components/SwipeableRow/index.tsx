@@ -29,7 +29,11 @@ export default function SwipeableRow({
   const hasFinePointer = useMediaQuery("(pointer: fine)");
   const [swipeDistance, setSwipeDistance] = useState(0);
   const swipeHandlers = useSwipeable({
-    onSwiping: ({ deltaX }) => {
+    onSwiping: ({ deltaX, dir, event }) => {
+      if (dir === "Up" || dir === "Down") {
+        return;
+      }
+
       // Swiping left
       if (deltaX < 0) {
         setSwipeDistance(
@@ -66,7 +70,7 @@ export default function SwipeableRow({
     onSwiped: () => {
       setSwipeDistance(0);
     },
-    preventDefaultTouchmoveEvent: true,
+    // preventDefaultTouchmoveEvent: true,
   });
   const springProps = useSpring({
     left: (() => {
@@ -141,7 +145,7 @@ export default function SwipeableRow({
           "swipeablerow-swipe-surface relative flex bg-inherit",
           className
         )}
-        style={{ ...springProps, ...swipeProps }}
+        style={{ ...springProps, ...swipeProps, touchAction: "pan-y" }}
         {...swipeHandlers}
       >
         {hasFinePointer && leftHiddenContent && (
