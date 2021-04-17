@@ -6,37 +6,45 @@
  * User Manual available at https://docs.gradle.org/7.0/userguide/building_java_projects.html
  */
 
+val logback_version: String by project
+val ktor_version: String by project
+val kotlin_version: String by project
+
 plugins {
-    // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
+    kotlin("plugin.serialization") version "1.4.32"
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
 }
 
 repositories {
-    // Use Maven Central for resolving dependencies.
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
-    // Align versions of all Kotlin components
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom")) // Align versions of all Kotlin components
+    implementation("io.ktor:ktor-server-core:$ktor_version")
+    implementation("io.ktor:ktor-server-netty:$ktor_version")
+    implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("io.ktor:ktor-serialization:$ktor_version")
+    implementation("com.apurebase:kgraphql:0.17.5")
+    implementation("com.apurebase:kgraphql-ktor:0.17.5")
 
-    // Use the Kotlin JDK 8 standard library.
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    // This dependency is used by the application.
-    implementation("com.google.guava:guava:30.0-jre")
-
-    // Use the Kotlin test library.
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-
-    // Use the Kotlin JUnit integration.
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation("org.jetbrains.kotlin:kotlin-test") // Use the Kotlin test library.
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit") // Use the Kotlin JUnit integration.
+    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
 
 application {
     // Define the main class for the application.
-    mainClass.set("xapphire13.wfs.AppKt")
+    mainClass.set("com.xapphire13.wfs.AppKt")
 }
+
+tasks {
+    compileKotlin { kotlinOptions { jvmTarget = "1.8" } }
+    compileTestKotlin { kotlinOptions { jvmTarget = "1.8" } }
+}
+
+sourceSets["main"].resources.srcDirs("resources")
