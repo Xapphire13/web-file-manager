@@ -4,25 +4,26 @@ import com.xapphire13.wfs.serialization.InstantSerializer
 import java.time.Instant
 import kotlinx.serialization.Serializable
 
-enum class ItemType {
-  FILE,
-  FOLDER
+interface RemoteItem {
+  val path: String
+  val realPath: String
+  val createdAt: Instant
+  val modifiedAt: Instant
 }
 
 @Serializable
-sealed class RemoteItem(val type: ItemType) {
-  @Serializable
-  data class RemoteFolder(
-      val path: String,
-      @Serializable(with = InstantSerializer::class) val createdAt: Instant,
-      @Serializable(with = InstantSerializer::class) val modifiedAt: Instant
-  ) : RemoteItem(ItemType.FOLDER)
+data class RemoteFolder(
+    override val path: String,
+    override val realPath: String,
+    @Serializable(with = InstantSerializer::class) override val createdAt: Instant,
+    @Serializable(with = InstantSerializer::class) override val modifiedAt: Instant
+) : RemoteItem
 
-  @Serializable
-  data class RemoteFile(
-      val path: String,
-      val size: Long,
-      @Serializable(with = InstantSerializer::class) val createdAt: Instant,
-      @Serializable(with = InstantSerializer::class) val modifiedAt: Instant
-  ) : RemoteItem(ItemType.FILE)
-}
+@Serializable
+data class RemoteFile(
+    override val path: String,
+    override val realPath: String,
+    val size: Long,
+    @Serializable(with = InstantSerializer::class) override val createdAt: Instant,
+    @Serializable(with = InstantSerializer::class) override val modifiedAt: Instant
+) : RemoteItem
