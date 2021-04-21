@@ -9,10 +9,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
-
-private val locations = listOf(
-  RemoteLocation("1", "My Drive", "/home")
-)
+import com.xapphire13.wfs.providers.LocationProvider
 
 fun SchemaBuilder.locationSchema() {
   type<RemoteLocation> {
@@ -27,7 +24,7 @@ fun SchemaBuilder.locationSchema() {
       val path = Path.of(location.rootPath)
       val attr = Files.readAttributes(path, BasicFileAttributes::class.java)
       
-      RemoteFolder("/", location.rootPath, attr.creationTime().toInstant(), attr.lastModifiedTime().toInstant())
+      RemoteFolder("/", path.toString(), attr.creationTime().toInstant(), attr.lastModifiedTime().toInstant())
     }
    }
  }
@@ -35,14 +32,12 @@ fun SchemaBuilder.locationSchema() {
   query("locations") {
     description = "List available locations"
 
-    resolver { -> locations }
+    resolver { -> LocationProvider.getAllLocations() }
   }
 
   query("location") {
     description = "Get the specified location"
 
-    resolver {id: String -> 
-      locations.find { it.id == id } ?: throw NotFoundException("Can't find location with id: $id")
-    }
+    resolver { id: String ->  LocationProvider.getLocation(id) }
   }
 }

@@ -4,8 +4,11 @@ import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import com.xapphire13.wfs.models.RemoteFile
 import com.xapphire13.wfs.models.RemoteFolder
 import com.xapphire13.wfs.models.RemoteItem
+import com.xapphire13.wfs.providers.LocationProvider
+import io.ktor.features.NotFoundException
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 
@@ -40,6 +43,27 @@ fun SchemaBuilder.itemSchema() {
         }
             ?: emptyList()
       }
+    }
+  }
+
+  query("folder") {
+    resolver { locationId: String, path: String ->
+      val location = LocationProvider.getLocation(locationId)
+      val rootPath = Path.of(location.rootPath)
+      val normalizedPath = if (path.startsWith("/")) ".$path" else path
+      val resolvedPath = rootPath.resolve(normalizedPath).normalize()
+      val attr =
+          try {
+            Files.readAttributes(resolvedPath, BasicFileAttributes::class.java)
+          } catch (e: NoSuchFileException) {
+            throw NotFoundException("Cannot find folder: ${e.message}")
+          }
+
+      RemoteFolder(
+          path,
+          resolvedPath.toString(),
+          attr.creationTime().toInstant(),
+          attr.lastModifiedTime().toInstant())
     }
   }
 }
