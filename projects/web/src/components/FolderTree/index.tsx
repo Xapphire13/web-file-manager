@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { loadDirectoryChildren } from "../../Api";
-import { RemoteDirectory } from "../../models/RemoteDirectory";
+import React from "react";
 import Folder from "./Folder";
 import { cx } from "@linaria/core";
+import { gql, useQuery } from "@apollo/client";
 
 export interface FolderTreeProps {
   locationId: string;
@@ -20,29 +19,55 @@ export default function FolderTree({
   onPathChanged,
   locationId,
 }: FolderTreeProps) {
-  const [childDirs, setChildDirs] = useState<RemoteDirectory[]>([]);
+  const { data, loading } = useQuery<
+    {
+      location: {
+        rootFolder: {
+          children: {
+            __typename: "RemoteFile" | "RemoteFolder";
+            path: string;
+          }[];
+        };
+      };
+    },
+    { locationId: string }
+  >(
+    gql`
+      query LoadRootDir($locationId: String!) {
+        location(id: $locationId) {
+          rootFolder {
+            children {
+              ... on RemoteFolder {
+                path
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        locationId,
+      },
+    }
+  );
+  const childFolders =
+    data?.location.rootFolder.children.filter(
+      (child) => child.__typename === "RemoteFolder"
+    ) ?? [];
 
-  useEffect(() => {
-    const loadRootDir = async () => {
-      const children = await loadDirectoryChildren(locationId, "/");
-      setChildDirs(
-        children
-          .filter((child) => child instanceof RemoteDirectory)
-          .map((child) => child as RemoteDirectory)
-      );
-    };
-
-    loadRootDir();
-  }, [locationId]);
+  if (loading) {
+    return <div>Loading!!</div>;
+  }
 
   return (
     <ul className={cx("list-none pl-0", className)} style={style}>
-      {childDirs.map((dir) => (
+      {childFolders.map((child) => (
         <Folder
-          key={dir.path}
+          key={child.path}
           locationId={locationId}
           currentPath={path}
-          dir={dir}
+          folderPath={child.path}
           onPathChanged={onPathChanged}
         />
       ))}

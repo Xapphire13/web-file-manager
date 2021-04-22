@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { RemoteLocation } from "../models/RemoteLocation";
+import RemoteLocation from "../models/RemoteLocation";
 import Pressable from "./core/Pressable";
 import FolderTree from "./FolderTree";
 import { cx } from "@linaria/core";

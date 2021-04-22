@@ -1,26 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import Theme from "../Theme";
 
-export default function useWindowSize() {
-  const [size, setSize] = useState({
-    width: 0,
-    height: 0,
+function rectToState({ width, height }: DOMRect) {
+  return {
+    width,
+    height,
     breakpoints: {
-      mediumAndAbove: false,
-      largeAndAbove: false,
+      mediumAndAbove: width >= Theme.breakpoints.medium,
+      largeAndAbove: width >= Theme.breakpoints.large,
     },
-  });
+  };
+}
+
+export default function useWindowSize() {
+  const [size, setSize] = useState(
+    rectToState(document.body.getBoundingClientRect())
+  );
   const observer = useRef(
     new ResizeObserver(([bodyEntry]) => {
-      const { width, height } = bodyEntry.target.getBoundingClientRect();
-      setSize({
-        width,
-        height,
-        breakpoints: {
-          mediumAndAbove: width >= Theme.breakpoints.medium,
-          largeAndAbove: width >= Theme.breakpoints.large,
-        },
-      });
+      setSize(rectToState(bodyEntry.target.getBoundingClientRect()));
     })
   );
 

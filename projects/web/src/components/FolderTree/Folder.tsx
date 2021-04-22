@@ -1,44 +1,62 @@
-import React, { useEffect, useState } from "react";
-import { loadDirectoryChildren } from "../../Api";
-import { RemoteDirectory } from "../../models/RemoteDirectory";
+import React from "react";
 import Pressable from "../core/Pressable";
 import path from "path";
 import isDescendantDirectory from "../../utils/isDescendantDirectory";
+import { gql, useQuery } from "@apollo/client";
 
 export interface FolderProps {
   locationId: string;
-  dir: RemoteDirectory;
+  folderPath: string;
   onPathChanged: (path: string) => void;
   currentPath: string;
 }
 
 export default function Folder({
   locationId,
-  dir,
+  folderPath,
   onPathChanged,
   currentPath,
 }: FolderProps) {
-  const [subDirs, setSubDirs] = useState<RemoteDirectory[]>();
-  const expanded = isDescendantDirectory(dir.path, currentPath);
-
-  useEffect(() => {
-    const getFiles = async () => {
-      const children = await loadDirectoryChildren(locationId, dir.path);
-      setSubDirs(
-        children
-          .filter((file) => file instanceof RemoteDirectory)
-          .map((file) => file as RemoteDirectory)
-      );
-    };
-
-    getFiles();
-  }, [locationId, dir]);
+  const expanded = isDescendantDirectory(folderPath, currentPath);
+  const { data, loading } = useQuery<
+    {
+      folder: {
+        children: {
+          __typename: "RemoteFile" | "RemoteFolder";
+          path: string;
+        }[];
+      };
+    },
+    { locationId: string; path: string }
+  >(
+    gql`
+      query LoadChildFolders($locationId: String!, $path: String!) {
+        folder(locationId: $locationId, path: $path) {
+          children {
+            ... on RemoteFolder {
+              path
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        locationId,
+        path: folderPath,
+      },
+    }
+  );
+  const childFolders =
+    data?.folder.children.filter(
+      (child) => child.__typename === "RemoteFolder"
+    ) ?? [];
 
   const handleOnPress = () => {
     if (expanded) {
-      onPathChanged(path.resolve(dir.path, ".."));
+      onPathChanged(path.resolve(folderPath, ".."));
     } else {
-      onPathChanged(dir.path);
+      onPathChanged(folderPath);
     }
   };
 
@@ -49,20 +67,25 @@ export default function Folder({
         onPress={handleOnPress}
         fullWidth
       >
-        {dir.name}
+        {path.basename(folderPath)}
       </Pressable>
-      {subDirs && expanded && (
-        <ul className="m-0 ml-1 list-none">
-          {subDirs.map((file) => (
-            <Folder
-              key={file.path}
-              locationId={locationId}
-              currentPath={currentPath}
-              dir={file}
-              onPathChanged={onPathChanged}
-            />
-          ))}
-        </ul>
+      {expanded && (
+        <>
+          {loading && "Loading!!"}
+          {!loading && (
+            <ul className="m-0 ml-4 list-none">
+              {childFolders.map((child) => (
+                <Folder
+                  key={child.path}
+                  locationId={locationId}
+                  currentPath={currentPath}
+                  folderPath={child.path}
+                  onPathChanged={onPathChanged}
+                />
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </li>
   );

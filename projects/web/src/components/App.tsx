@@ -5,6 +5,19 @@ import CurrentPathProvider from "../providers/CurrentPathProvider";
 import { createBrowserHistory } from "history";
 import { cx } from "@linaria/core";
 import { css } from "@linaria/core";
+import {
+  ApolloClient,
+  ApolloProvider,
+  createHttpLink,
+  InMemoryCache,
+} from "@apollo/client";
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: createHttpLink({
+    uri: "http://127.0.0.1:5000/graphql",
+  }),
+});
 
 const history = createBrowserHistory();
 
@@ -34,11 +47,13 @@ export default function App() {
         "bg-gray-700 text-white w-screen overflow-hidden"
       )}
     >
-      <Router history={history}>
-        <CurrentPathProvider>
-          <MainPage />
-        </CurrentPathProvider>
-      </Router>
+      <ApolloProvider client={client}>
+        <Router history={history}>
+          <CurrentPathProvider>
+            <MainPage />
+          </CurrentPathProvider>
+        </Router>
+      </ApolloProvider>
     </div>
   );
 }

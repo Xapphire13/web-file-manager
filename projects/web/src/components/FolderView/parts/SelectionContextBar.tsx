@@ -1,21 +1,24 @@
 import { cx } from "@linaria/core";
 import React from "react";
-import { RemoteFile } from "../../../models/RemoteFile";
 import StyleableProps from "../../../types/StyleableProps";
 import formatSize from "../../../utils/formatSize";
 import IconButton from "../../core/IconButton";
 import { Upload, Download, Move, Trash } from "react-feather";
+import RemoteFolder from "../../../models/RemoteFolder";
+import RemoteFile from "../../../models/RemoteFile";
 
 export interface SelectionContextBarProps extends StyleableProps {
-  selectedFiles: RemoteFile[];
+  selectedItems: (RemoteFile | RemoteFolder)[];
 }
 
 export default function SelectionContextBar({
   className,
   style,
-  selectedFiles,
+  selectedItems,
 }: SelectionContextBarProps) {
-  const totalFileSize = selectedFiles.reduce((acc, curr) => acc + curr.size, 0);
+  const totalFileSize = selectedItems
+    .filter((it): it is RemoteFile => it.__typename === "RemoteFile")
+    .reduce((acc, curr) => acc + curr.size, 0);
 
   return (
     <div
@@ -26,7 +29,7 @@ export default function SelectionContextBar({
       style={style}
     >
       <div>
-        {selectedFiles.length} selected - {formatSize(totalFileSize)}
+        {selectedItems.length} selected - {formatSize(totalFileSize)}
       </div>
       <div className="self-stretch w-px bg-gray-500 ml-3 mr-1" />
       <IconButton label="Share" icon={<Upload size="20" />} />

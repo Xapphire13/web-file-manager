@@ -7,6 +7,7 @@ import com.xapphire13.wfs.schema.scalarSchema
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.response.respond
 import io.ktor.routing.get
@@ -19,6 +20,11 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(@Suppress("unused_parameter") testing: Boolean = false) {
   install(ContentNegotiation) { json() }
+
+  install(CORS) {
+    anyHost()
+    allowNonSimpleContentTypes = true
+  }
 
   install(GraphQL) {
     playground = true

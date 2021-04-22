@@ -71,7 +71,11 @@ export default function Header({ className, style }: HeaderProps) {
               {parentIsRoot ? currentLocation?.name : parentFolder}
             </Pressable>
           )}
-          <div className="justify-self-center font-bold">Current Folder</div>
+          <div className="justify-self-center font-bold">
+            {currentPath === "/"
+              ? currentLocation?.name
+              : path.basename(currentPath)}
+          </div>
           <div className="justify-self-end">
             <Menu
               items={[

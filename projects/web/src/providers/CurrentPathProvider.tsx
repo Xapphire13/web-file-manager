@@ -1,7 +1,7 @@
+import { gql, useQuery } from "@apollo/client";
 import React, { useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation } from "react-router";
-import { loadLocations } from "../Api";
-import { RemoteLocation } from "../models/RemoteLocation";
+import RemoteLocation from "../models/RemoteLocation";
 
 export const CurrentPathContext = React.createContext({
   locations: [] as RemoteLocation[],
@@ -9,6 +9,7 @@ export const CurrentPathContext = React.createContext({
   currentPath: "/",
   setLocationId: (locationId: string) => {},
   setCurrentPath: (path: string) => {},
+  loading: false,
 });
 export default function CurrentPathProvider({
   children,
@@ -18,6 +19,16 @@ export default function CurrentPathProvider({
   const [locationId, setLocationId] = useState<string>();
   const [locations, setLocations] = useState<RemoteLocation[]>([]);
   const [currentPath, setCurrentPath] = useState("/");
+  const { data, loading } = useQuery<{
+    locations: RemoteLocation[];
+  }>(gql`
+    query GetLocations {
+      locations {
+        id
+        name
+      }
+    }
+  `);
   const contextValue = useMemo<React.ContextType<typeof CurrentPathContext>>(
     () => ({
       currentLocation: locations.find((it) => it.id === locationId),
@@ -25,6 +36,7 @@ export default function CurrentPathProvider({
       locations,
       setCurrentPath,
       setLocationId,
+      loading,
     }),
     [
       locationId,
@@ -33,6 +45,7 @@ export default function CurrentPathProvider({
       setLocationId,
       locations,
       setLocations,
+      loading,
     ]
   );
 
@@ -66,18 +79,14 @@ export default function CurrentPathProvider({
   }, [locationId, currentPath]);
 
   useEffect(() => {
-    const load = async () => {
-      const result = await loadLocations();
-
-      setLocations(result);
+    if (data) {
+      setLocations(data.locations);
 
       if (!locationId) {
-        setLocationId(result[0].id);
+        setLocationId(data.locations[0].id);
       }
-    };
-
-    load();
-  }, [locationId]);
+    }
+  }, [data, locationId]);
 
   return (
     <CurrentPathContext.Provider value={contextValue}>

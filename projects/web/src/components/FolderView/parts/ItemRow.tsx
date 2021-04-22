@@ -1,9 +1,7 @@
 import React from "react";
-import { RemoteFile } from "../../../models/RemoteFile";
 import formatSize from "../../../utils/formatSize";
 import { DateTime } from "luxon";
 import FileIcon from "../../FileIcon";
-import { RemoteDirectory } from "../../../models/RemoteDirectory";
 import SwipeableRow from "../../SwipeableRow";
 import SwipeableRowContent from "../../SwipeableRow/parts/SwipeableRowContent";
 import SelectToggle from "./SelectToggle";
@@ -14,29 +12,36 @@ import { Download, Move, Trash, Upload } from "react-feather";
 import useWindowSize from "../../../hooks/useWindowSize";
 import { cx } from "@linaria/core";
 import safePlural from "../../../utils/safePlural";
+import path from "path";
+import RemoteFolder from "../../../models/RemoteFolder";
+import RemoteFile from "../../../models/RemoteFile";
 
-export interface FileRowProps {
-  file: RemoteFile;
+export interface ItemRowProps {
+  item: RemoteFile | RemoteFolder;
   onPress: () => void;
   selected?: boolean;
   onSelectedChange?: (newValue: boolean) => void;
 }
 
-export default function FileRow({
-  file,
+export default function ItemRow({
+  item,
   onPress,
   selected,
   onSelectedChange,
-}: FileRowProps) {
+}: ItemRowProps) {
   const { breakpoints } = useWindowSize();
-  const fileMeta =
-    file instanceof RemoteDirectory
-      ? `${file.childrenCount} ${safePlural(
-          file.childrenCount,
-          "item",
-          "items"
-        )}`
-      : null;
+  const itemName = path.basename(item.path);
+  const fileMeta = null;
+  const formattedSize =
+    item.__typename === "RemoteFile" ? formatSize(item.size) : "--";
+  // const fileMeta =
+  //   item.__typename === "RemoteFolder"
+  //     ? `${item.childrenCount} ${safePlural(
+  //         item.childrenCount,
+  //         "item",
+  //         "items"
+  //       )}`
+  //     : null;
 
   return (
     <li
@@ -52,21 +57,21 @@ export default function FileRow({
             <div className="flex items-center gap-2 pl-2">
               <SelectToggle selected={selected} onChange={onSelectedChange} />
               <FileIcon
-                filename={file.name}
-                isFolder={file instanceof RemoteDirectory}
+                filename={itemName}
+                isFolder={item.__typename === "RemoteFolder"}
               />
               <Pressable
                 className="flex-grow flex justify-between items-center"
                 onPress={onPress}
               >
-                <div>{file.name}</div>
+                <div>{itemName}</div>
                 {fileMeta && (
                   <div className="text-sm text-gray-400 pr-2">{fileMeta}</div>
                 )}
               </Pressable>
-              <div className="w-24">{formatSize(file.size)}</div>
+              <div className="w-24">{formattedSize}</div>
               <div className="w-32">
-                {DateTime.fromJSDate(file.modifiedAt).toLocaleString(
+                {DateTime.fromISO(item.modifiedAt).toLocaleString(
                   DateTime.DATE_MED
                 )}
               </div>
@@ -80,17 +85,17 @@ export default function FileRow({
               fullWidth
             >
               <FileIcon
-                filename={file.name}
-                isFolder={file instanceof RemoteDirectory}
+                filename={itemName}
+                isFolder={item.__typename === "RemoteFolder"}
                 size={48}
               />
               <div className="ml-2">
-                <p>{file.name}</p>
+                <p>{itemName}</p>
                 <p className="text-xs text-gray-400">
-                  {DateTime.fromJSDate(file.modifiedAt).toLocaleString(
+                  {DateTime.fromISO(item.modifiedAt).toLocaleString(
                     DateTime.DATE_MED
                   )}{" "}
-                  - {fileMeta ? fileMeta : formatSize(file.size)}
+                  - {fileMeta ? fileMeta : formattedSize}
                 </p>
               </div>
             </Pressable>

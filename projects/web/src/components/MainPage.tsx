@@ -39,6 +39,7 @@ export default function MainPage() {
     locations,
     setCurrentPath,
     setLocationId,
+    loading,
   } = useCurrentPath();
   const { breakpoints } = useWindowSize();
 
@@ -49,6 +50,10 @@ export default function MainPage() {
   const handleOnPathChanged = (newPath: string) => {
     setCurrentPath(newPath);
   };
+
+  if (loading) {
+    return <div>Loading!!</div>;
+  }
 
   return (
     <Container className="grid h-full w-full">

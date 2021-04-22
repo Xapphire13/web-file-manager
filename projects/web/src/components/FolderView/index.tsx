@@ -1,9 +1,8 @@
 import { cx } from "@linaria/core";
-import React, { useEffect, useState } from "react";
-import { loadDirectoryChildren } from "../../Api";
-import { RemoteDirectory } from "../../models/RemoteDirectory";
-import { RemoteFile } from "../../models/RemoteFile";
-import FileRow from "./parts/FileRow";
+import React, { useMemo, useState } from "react";
+import RemoteFolder from "../../models/RemoteFolder";
+import RemoteFile from "../../models/RemoteFile";
+import ItemRow from "./parts/ItemRow";
 import pathUtil from "path";
 import ColumnHeaders from "./parts/ColumnHeaders";
 import SwipeableRow from "../SwipeableRow";
@@ -13,6 +12,8 @@ import isNonNull from "../../utils/isNonNull";
 import SelectionContextBar from "./parts/SelectionContextBar";
 import SearchBox from "./parts/SearchBox";
 import useWindowSize from "../../hooks/useWindowSize";
+import { gql, useQuery } from "@apollo/client";
+import RemoteItem from "../../models/RemoteItem";
 
 export interface FolderViewProps {
   locationId: string | undefined;
@@ -29,36 +30,70 @@ export default function FolderView({
   className,
   style,
 }: FolderViewProps) {
-  const [files, setFiles] = useState<RemoteFile[]>();
+  const { data, loading } = useQuery<
+    {
+      folder: {
+        children: (RemoteFolder | RemoteFile)[];
+      };
+    },
+    { locationId: string; path: string }
+  >(
+    gql`
+      query LoadFolderChildren($locationId: String!, $path: String!) {
+        folder(locationId: $locationId, path: $path) {
+          children {
+            ... on RemoteFolder {
+              path
+              createdAt
+              modifiedAt
+            }
+            ... on RemoteFile {
+              path
+              createdAt
+              modifiedAt
+              size
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        locationId: locationId!,
+        path,
+      },
+      skip: !locationId,
+    }
+  );
+  const items = useMemo(
+    () =>
+      data?.folder.children
+        ? [...data.folder.children].sort((a, b) => {
+            if (a.__typename === b.__typename) return 0;
+
+            return a.__typename === "RemoteFile" ? -1 : 1;
+          })
+        : [],
+    [data]
+  );
   const [selectAll, setSelectAll] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<Record<string, boolean>>(
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
     {}
   );
   const { breakpoints } = useWindowSize();
-  const selectedFilesArr = Object.keys(selectedFiles)
+  const selectedItemsArr = Object.keys(selectedItems)
     .reduce(
       (acc, curr) =>
-        selectedFiles[curr]
-          ? [...acc, files?.find(({ path }) => path === curr)]
+        selectedItems[curr]
+          ? [...acc, items.find(({ path }) => path === curr)]
           : acc,
-      [] as (RemoteFile | undefined)[]
+      [] as (RemoteFile | RemoteFolder | undefined)[]
     )
     .filter(isNonNull);
 
-  useEffect(() => {
-    const getFiles = async (locationId: string) => {
-      const children = await loadDirectoryChildren(locationId, path);
-      setFiles(children);
-    };
-
-    if (locationId) {
-      getFiles(locationId);
-    }
-  }, [locationId, path]);
-
-  const handleOnFilePressed = (file: RemoteFile) => {
-    if (file instanceof RemoteDirectory) {
-      onPathChanged(file.path);
+  const handleOnItemPressed = (item: RemoteItem) => {
+    if (item.__typename === "RemoteFolder") {
+      onPathChanged(item.path);
     }
   };
 
@@ -70,22 +105,22 @@ export default function FolderView({
     setSelectAll(newValue);
 
     if (newValue) {
-      setSelectedFiles(
-        files?.reduce((acc, curr) => ({ ...acc, [curr.path]: true }), {}) ?? {}
+      setSelectedItems(
+        items?.reduce((acc, curr) => ({ ...acc, [curr.path]: true }), {}) ?? {}
       );
     } else {
-      setSelectedFiles({});
+      setSelectedItems({});
     }
   };
 
   const handleFileSelectedChange = (path: string, selected: boolean) => {
-    setSelectedFiles((prev) => {
+    setSelectedItems((prev) => {
       const newValue = {
         ...prev,
         [path]: selected,
       };
 
-      const allSelected = files?.every(({ path }) => newValue[path]) ?? false;
+      const allSelected = items?.every(({ path }) => newValue[path]) ?? false;
       setSelectAll(allSelected);
 
       return newValue;
@@ -94,7 +129,8 @@ export default function FolderView({
 
   return (
     <div className={cx("p-3 relative", className)} style={style}>
-      {files && (
+      {loading && "Loading!!"}
+      {!loading && (
         <>
           <SearchBox />
 
@@ -121,12 +157,12 @@ export default function FolderView({
                 </SwipeableRow>
               </li>
             )}
-            {files.map((file) => (
-              <FileRow
+            {items.map((file) => (
+              <ItemRow
                 key={file.path}
-                onPress={() => handleOnFilePressed(file)}
-                file={file}
-                selected={selectedFiles[file.path]}
+                onPress={() => handleOnItemPressed(file)}
+                item={file}
+                selected={selectedItems[file.path]}
                 onSelectedChange={(newValue) =>
                   handleFileSelectedChange(file.path, newValue)
                 }
@@ -135,10 +171,10 @@ export default function FolderView({
           </ul>
         </>
       )}
-      {selectedFilesArr.length > 0 && (
+      {selectedItemsArr.length > 0 && (
         <>
           <div className="absolute bottom-3 left-0 right-0 text-center">
-            <SelectionContextBar selectedFiles={selectedFilesArr} />
+            <SelectionContextBar selectedItems={selectedItemsArr} />
           </div>
         </>
       )}
