@@ -18,12 +18,6 @@ module.exports = {
       path: require.resolve("path-browserify"),
     },
   },
-  devServer: {
-    contentBase: "./dist",
-    port: 9000,
-    sockHost: "webpack.local",
-    sockPort: 80,
-  },
   module: {
     rules: [
       {

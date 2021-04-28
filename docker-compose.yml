@@ -1,0 +1,19 @@
+services:
+  web:
+    build: ./projects/web
+    ports:
+      - 5000:80
+    volumes:
+      - ./projects/web/dist:/var/www
+    networks:
+      - backend
+  service:
+    build: ./projects/server
+    volumes:
+      - ./projects/server:/opt/app
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

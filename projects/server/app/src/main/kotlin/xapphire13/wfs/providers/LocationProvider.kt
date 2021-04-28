@@ -4,7 +4,7 @@ import com.xapphire13.wfs.models.RemoteLocation
 import io.ktor.features.NotFoundException
 
 object LocationProvider {
-  private val locations = listOf(RemoteLocation("1", "My Drive", "/home"))
+  private val locations = listOf(RemoteLocation("1", "My Drive", "/"))
 
   fun getLocation(id: String): RemoteLocation {
     return locations.find { it.id == id }
