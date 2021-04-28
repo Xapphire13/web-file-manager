@@ -9,6 +9,8 @@ import {
   File,
   IconProps,
   Folder,
+  Code,
+  Terminal,
 } from "react-feather";
 
 export interface FileIconProps {
@@ -17,36 +19,89 @@ export interface FileIconProps {
   size?: number;
 }
 
+function isSourceCode(filename: string, mimeType: string) {
+  return (
+    ["javascript", "json"].some((it) => mimeType.endsWith(it)) ||
+    [".ts", ".tsx", ".kt", ".kts"].some((it) => filename.endsWith(it))
+  );
+}
+
+function getFileType(
+  filename: string
+):
+  | "code"
+  | "application"
+  | "audio"
+  | "image"
+  | "text"
+  | "video"
+  | "terminal"
+  | "unknown" {
+  const mimeType = mime.lookup(filename) || "";
+  console.log(filename, mimeType);
+
+  if (isSourceCode(filename, mimeType)) {
+    return "code";
+  }
+
+  if ([".bat", ".sh", ".zsh"].some((it) => filename.endsWith(it))) {
+    return "terminal";
+  }
+
+  if (mimeType.startsWith("application")) {
+    return "application";
+  }
+
+  if (mimeType.startsWith("audio")) {
+    return "audio";
+  }
+
+  if (mimeType.startsWith("image")) {
+    return "image";
+  }
+
+  if (mimeType.startsWith("text")) {
+    return "text";
+  }
+
+  if (mimeType.startsWith("video")) {
+    return "video";
+  }
+
+  return "unknown";
+}
+
 export default function FileIcon({ filename, isFolder, size }: FileIconProps) {
-  const mimeType = mime.lookup(filename);
   const icon = (() => {
     const props: IconProps = {
       size: size ?? 32,
     };
 
     if (isFolder) {
-      return <Folder {...props} />;
+      return <Folder className="text-purple-400" {...props} />;
     }
 
-    if (mimeType) {
-      if (mimeType.startsWith("application")) {
+    const fileType = getFileType(filename);
+
+    switch (fileType) {
+      case "application":
         return <Database {...props} />;
-      }
-      if (mimeType.startsWith("audio")) {
+      case "audio":
         return <Music {...props} />;
-      }
-      if (mimeType.startsWith("image")) {
+      case "code":
+        return <Code {...props} />;
+      case "image":
         return <Image {...props} />;
-      }
-      if (mimeType.startsWith("text")) {
+      case "terminal":
+        return <Terminal {...props} />;
+      case "text":
         return <FileText {...props} />;
-      }
-      if (mimeType.startsWith("video")) {
+      case "video":
         return <Film {...props} />;
-      }
+      case "unknown":
+      default:
+        return <File {...props} />;
     }
-
-    return <File {...props} />;
   })();
 
   return icon;
