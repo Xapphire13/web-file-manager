@@ -1,10 +1,15 @@
+import { cx } from "@linaria/core";
 import { useSpring } from "@react-spring/core";
 import { animated } from "@react-spring/web";
 import React, { useState } from "react";
 import useMeasure from "react-use-measure";
 import TertiaryButton from "../../core/TertiaryButton";
 
-export default function SearchBox() {
+interface SearchBoxProps {
+  className?: string;
+}
+
+export default function SearchBox({ className }: SearchBoxProps) {
   const [query, setQuery] = useState("");
   const [actionsRef, { width: actionsWidth }] = useMeasure();
   const [focused, setFocused] = useState(false);
@@ -27,7 +32,7 @@ export default function SearchBox() {
 
   return (
     <div
-      className="mb-2 flex overflow-hidden items-center p-0.5"
+      className={cx("mb-2 flex overflow-hidden items-center p-0.5", className)}
       onFocus={handleFocus}
       onBlur={handleBlur}
     >

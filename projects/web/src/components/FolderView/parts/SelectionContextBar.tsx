@@ -23,7 +23,7 @@ export default function SelectionContextBar({
   return (
     <div
       className={cx(
-        "border-2 border-gray-400 rounded-full py-1 pl-3 pr-2 inline-flex relative items-center",
+        "border-2 border-gray-400 rounded-full py-1 pl-3 pr-2 inline-flex relative items-center bg-gray-700",
         className
       )}
       style={style}

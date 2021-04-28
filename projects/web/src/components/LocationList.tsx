@@ -45,7 +45,13 @@ export default function LocationList({
   }, [locationId]);
 
   return (
-    <ul className={cx("list-none px-3 py-2", className)} style={style}>
+    <ul
+      className={cx(
+        "list-none px-3 py-2 overflow-x-hidden overscroll-y-auto",
+        className
+      )}
+      style={style}
+    >
       {locations.map(({ id, name }) => (
         <li key={id}>
           <Pressable

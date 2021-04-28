@@ -128,11 +128,14 @@ export default function FolderView({
   };
 
   return (
-    <div className={cx("p-3 relative", className)} style={style}>
+    <div
+      className={cx("p-3 relative flex flex-col overflow-hidden", className)}
+      style={style}
+    >
       {loading && "Loading!!"}
       {!loading && (
         <>
-          <SearchBox />
+          <SearchBox className="flex-shrink-0" />
 
           {breakpoints.mediumAndAbove && (
             <ColumnHeaders
@@ -141,34 +144,36 @@ export default function FolderView({
             />
           )}
 
-          <ul className="list-none pl-0 m-0 mt-2">
-            {breakpoints.mediumAndAbove && path !== "/" && (
-              <li className="block">
-                <SwipeableRow className="rounded-lg py-2 px-0.5">
-                  <SwipeableRowContent>
-                    <Pressable
-                      style={{ paddingLeft: 75 }}
-                      onPress={handleGoToParentFolder}
-                      fullWidth
-                    >
-                      Parent folder...
-                    </Pressable>
-                  </SwipeableRowContent>
-                </SwipeableRow>
-              </li>
-            )}
-            {items.map((file) => (
-              <ItemRow
-                key={file.path}
-                onPress={() => handleOnItemPressed(file)}
-                item={file}
-                selected={selectedItems[file.path]}
-                onSelectedChange={(newValue) =>
-                  handleFileSelectedChange(file.path, newValue)
-                }
-              />
-            ))}
-          </ul>
+          <div className="flex-grow overflow-y-auto">
+            <ul className="list-none pl-0 m-0 mt-2">
+              {breakpoints.mediumAndAbove && path !== "/" && (
+                <li className="block">
+                  <SwipeableRow className="rounded-lg py-2 px-0.5">
+                    <SwipeableRowContent>
+                      <Pressable
+                        style={{ paddingLeft: 75 }}
+                        onPress={handleGoToParentFolder}
+                        fullWidth
+                      >
+                        Parent folder...
+                      </Pressable>
+                    </SwipeableRowContent>
+                  </SwipeableRow>
+                </li>
+              )}
+              {items.map((file) => (
+                <ItemRow
+                  key={file.path}
+                  onPress={() => handleOnItemPressed(file)}
+                  item={file}
+                  selected={selectedItems[file.path]}
+                  onSelectedChange={(newValue) =>
+                    handleFileSelectedChange(file.path, newValue)
+                  }
+                />
+              ))}
+            </ul>
+          </div>
         </>
       )}
       {selectedItemsArr.length > 0 && (
