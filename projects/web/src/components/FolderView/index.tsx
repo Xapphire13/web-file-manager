@@ -14,6 +14,7 @@ import SearchBox from "./parts/SearchBox";
 import useWindowSize from "../../hooks/useWindowSize";
 import { gql, useQuery } from "@apollo/client";
 import RemoteItem from "../../models/RemoteItem";
+import { debounce } from "throttle-debounce";
 
 export interface FolderViewProps {
   locationId: string | undefined;
@@ -30,7 +31,8 @@ export default function FolderView({
   className,
   style,
 }: FolderViewProps) {
-  const { data, loading } = useQuery<
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const { data: folderChildrenData, loading } = useQuery<
     {
       folder: {
         children: (RemoteFolder | RemoteFile)[];
@@ -65,17 +67,67 @@ export default function FolderView({
       skip: !locationId,
     }
   );
-  const items = useMemo(
-    () =>
-      data?.folder.children
-        ? [...data.folder.children].sort((a, b) => {
-            if (a.__typename === b.__typename) return 0;
-
-            return a.__typename === "RemoteFile" ? -1 : 1;
-          })
-        : [],
-    [data]
+  const { data: searchResults, loading: searchResultsLoading } = useQuery<
+    {
+      searchItems: { results: (RemoteFolder | RemoteFile)[] };
+    },
+    { locationId: string; searchQuery: string; path: string }
+  >(
+    gql`
+      query SearchItems(
+        $locationId: String!
+        $searchQuery: String!
+        $path: String!
+      ) {
+        searchItems(
+          locationId: $locationId
+          searchQuery: $searchQuery
+          path: $path
+        ) {
+          results {
+            ... on RemoteFolder {
+              path
+              createdAt
+              modifiedAt
+            }
+            ... on RemoteFile {
+              path
+              createdAt
+              modifiedAt
+              size
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        locationId: locationId!,
+        searchQuery,
+        path,
+      },
+      skip: !searchQuery,
+    }
   );
+  const items = useMemo(() => {
+    if (searchResults?.searchItems.results) {
+      return [...searchResults.searchItems.results].sort((a, b) => {
+        if (a.__typename === b.__typename) return 0;
+
+        return a.__typename === "RemoteFile" ? -1 : 1;
+      });
+    }
+
+    if (folderChildrenData?.folder.children) {
+      return [...folderChildrenData.folder.children].sort((a, b) => {
+        if (a.__typename === b.__typename) return 0;
+
+        return a.__typename === "RemoteFile" ? -1 : 1;
+      });
+    }
+
+    return [];
+  }, [folderChildrenData, searchResults]);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
     {}
@@ -127,6 +179,12 @@ export default function FolderView({
     });
   };
 
+  const handleSearchQueryChanged = useMemo(() => {
+    return debounce(250, (newQuery: string) => {
+      setSearchQuery(newQuery);
+    });
+  }, []);
+
   return (
     <div
       className={cx("p-3 relative flex flex-col overflow-hidden", className)}
@@ -135,7 +193,10 @@ export default function FolderView({
       {loading && "Loading!!"}
       {!loading && (
         <>
-          <SearchBox className="flex-shrink-0" />
+          <SearchBox
+            className="flex-shrink-0"
+            onQueryChanged={handleSearchQueryChanged}
+          />
 
           {breakpoints.mediumAndAbove && (
             <ColumnHeaders
@@ -144,36 +205,39 @@ export default function FolderView({
             />
           )}
 
-          <div className="flex-grow overflow-y-auto">
-            <ul className="list-none pl-0 m-0 mt-2">
-              {breakpoints.mediumAndAbove && path !== "/" && (
-                <li className="block">
-                  <SwipeableRow className="rounded-lg py-2 px-0.5">
-                    <SwipeableRowContent>
-                      <Pressable
-                        style={{ paddingLeft: 75 }}
-                        onPress={handleGoToParentFolder}
-                        fullWidth
-                      >
-                        Parent folder...
-                      </Pressable>
-                    </SwipeableRowContent>
-                  </SwipeableRow>
-                </li>
-              )}
-              {items.map((file) => (
-                <ItemRow
-                  key={file.path}
-                  onPress={() => handleOnItemPressed(file)}
-                  item={file}
-                  selected={selectedItems[file.path]}
-                  onSelectedChange={(newValue) =>
-                    handleFileSelectedChange(file.path, newValue)
-                  }
-                />
-              ))}
-            </ul>
-          </div>
+          {searchResultsLoading && <div>Please wait...</div>}
+          {!searchResultsLoading && (
+            <div className="flex-grow overflow-y-auto">
+              <ul className="list-none pl-0 m-0 mt-2">
+                {breakpoints.mediumAndAbove && !searchQuery && path !== "/" && (
+                  <li className="block">
+                    <SwipeableRow className="rounded-lg py-2 px-0.5">
+                      <SwipeableRowContent>
+                        <Pressable
+                          style={{ paddingLeft: 75 }}
+                          onPress={handleGoToParentFolder}
+                          fullWidth
+                        >
+                          Parent folder...
+                        </Pressable>
+                      </SwipeableRowContent>
+                    </SwipeableRow>
+                  </li>
+                )}
+                {items.map((file) => (
+                  <ItemRow
+                    key={file.path}
+                    onPress={() => handleOnItemPressed(file)}
+                    item={file}
+                    selected={selectedItems[file.path]}
+                    onSelectedChange={(newValue) =>
+                      handleFileSelectedChange(file.path, newValue)
+                    }
+                  />
+                ))}
+              </ul>
+            </div>
+          )}
         </>
       )}
       {selectedItemsArr.length > 0 && (

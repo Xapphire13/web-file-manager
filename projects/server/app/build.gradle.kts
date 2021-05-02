@@ -33,6 +33,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("com.apurebase:kgraphql:0.17.5")
     implementation("com.apurebase:kgraphql-ktor:0.17.5")
+    implementation("me.xdrop:fuzzywuzzy:1.3.1")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test") // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit") // Use the Kotlin JUnit integration.

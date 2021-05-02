@@ -1,15 +1,19 @@
 import { cx } from "@linaria/core";
 import { useSpring } from "@react-spring/core";
 import { animated } from "@react-spring/web";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useMeasure from "react-use-measure";
 import TertiaryButton from "../../core/TertiaryButton";
 
 interface SearchBoxProps {
+  onQueryChanged: (query: string) => void;
   className?: string;
 }
 
-export default function SearchBox({ className }: SearchBoxProps) {
+export default function SearchBox({
+  className,
+  onQueryChanged,
+}: SearchBoxProps) {
   const [query, setQuery] = useState("");
   const [actionsRef, { width: actionsWidth }] = useMeasure();
   const [focused, setFocused] = useState(false);
@@ -29,6 +33,10 @@ export default function SearchBox({ className }: SearchBoxProps) {
   const handleCancelPressed = () => {
     setQuery("");
   };
+
+  useEffect(() => {
+    onQueryChanged(query);
+  }, [query]);
 
   return (
     <div

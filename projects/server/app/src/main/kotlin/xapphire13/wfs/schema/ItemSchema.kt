@@ -4,6 +4,7 @@ import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import com.xapphire13.wfs.models.RemoteFile
 import com.xapphire13.wfs.models.RemoteFolder
 import com.xapphire13.wfs.models.RemoteItem
+import com.xapphire13.wfs.models.SearchResult
 import com.xapphire13.wfs.providers.LocationProvider
 import io.ktor.features.NotFoundException
 import java.io.File
@@ -11,6 +12,26 @@ import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
+import me.xdrop.fuzzywuzzy.FuzzySearch
+
+fun File.toRemoteFile(remoteParentPath: String): RemoteItem {
+  val attr = Files.readAttributes(this.toPath(), BasicFileAttributes::class.java)
+
+  return if (this.isDirectory) {
+    RemoteFolder(
+        Path.of(remoteParentPath, this.name).toString(),
+        this.path,
+        attr.creationTime().toInstant(),
+        attr.lastModifiedTime().toInstant())
+  } else {
+    RemoteFile(
+        Path.of(remoteParentPath, this.name).toString(),
+        this.path,
+        this.length(),
+        attr.creationTime().toInstant(),
+        attr.lastModifiedTime().toInstant())
+  }
+}
 
 fun SchemaBuilder.itemSchema() {
   type<RemoteItem>() { property(RemoteItem::realPath) { ignore = true } }
@@ -23,25 +44,7 @@ fun SchemaBuilder.itemSchema() {
         val folder = File(parent.realPath)
         val childrenFiles = folder.listFiles()
 
-        childrenFiles?.map { child ->
-          val attr = Files.readAttributes(child.toPath(), BasicFileAttributes::class.java)
-
-          if (child.isDirectory) {
-            return@map RemoteFolder(
-                Path.of(parent.path, child.name).toString(),
-                child.path,
-                attr.creationTime().toInstant(),
-                attr.lastModifiedTime().toInstant())
-          }
-
-          RemoteFile(
-              Path.of(parent.path, child.name).toString(),
-              child.path,
-              child.length(),
-              attr.creationTime().toInstant(),
-              attr.lastModifiedTime().toInstant())
-        }
-            ?: emptyList()
+        childrenFiles?.map { it.toRemoteFile(parent.path) } ?: emptyList()
       }
     }
   }
@@ -64,6 +67,37 @@ fun SchemaBuilder.itemSchema() {
           resolvedPath.toString(),
           attr.creationTime().toInstant(),
           attr.lastModifiedTime().toInstant())
+    }
+  }
+
+  query("searchItems") {
+    resolver { locationId: String, searchQuery: String, path: String? ->
+      if (path === null) {
+        SearchResult(results = emptyList())
+      } else {
+        try {
+          val location = LocationProvider.getLocation(locationId)
+          val rootPath = Path.of(location.rootPath)
+          val normalizedPath = if (path.startsWith("/")) ".$path" else path
+          val resolvedPath = rootPath.resolve(normalizedPath).normalize()
+          val childrenFiles =
+              resolvedPath.toFile().listFiles().map { it.toRemoteFile(resolvedPath.toString()) }
+          val results =
+              FuzzySearch.extractSorted(searchQuery, childrenFiles.map { it.path }).filter {
+                it.score >= 50
+              }
+
+          SearchResult(
+              results =
+                  results.fold(mutableListOf<RemoteItem>()) { acc, it ->
+                    acc.add(childrenFiles[it.index])
+                    acc
+                  })
+        } catch (ex: Exception) {
+          ex.printStackTrace()
+          throw ex
+        }
+      }
     }
   }
 }

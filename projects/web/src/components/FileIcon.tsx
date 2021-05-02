@@ -38,7 +38,6 @@ function getFileType(
   | "terminal"
   | "unknown" {
   const mimeType = mime.lookup(filename) || "";
-  console.log(filename, mimeType);
 
   if (isSourceCode(filename, mimeType)) {
     return "code";
