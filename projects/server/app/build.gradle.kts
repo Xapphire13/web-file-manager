@@ -11,11 +11,13 @@ val ktor_version: String by project
 val kotlin_version: String by project
 
 plugins {
+    // Apply the application plugin to add support for building a CLI application in Java.
+    application
+    
     kotlin("jvm") version "1.4.32"
     kotlin("plugin.serialization") version "1.4.32"
 
-    // Apply the application plugin to add support for building a CLI application in Java.
-    application
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 repositories {
