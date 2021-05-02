@@ -10,6 +10,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import com.xapphire13.wfs.providers.LocationProvider
+import com.xapphire13.wfs.extensions.getItem
 
 fun SchemaBuilder.locationSchema() {
   type<RemoteLocation> {
@@ -21,10 +22,13 @@ fun SchemaBuilder.locationSchema() {
 
   property<RemoteFolder>("rootFolder") { 
     resolver {location -> 
-      val path = Path.of(location.rootPath)
-      val attr = Files.readAttributes(path, BasicFileAttributes::class.java)
-      
-      RemoteFolder("/", path.toString(), attr.creationTime().toInstant(), attr.lastModifiedTime().toInstant())
+      try {
+        location.getItem(location.rootPath) as RemoteFolder
+      } catch (ex: Exception) {
+        ex.printStackTrace()
+
+        throw ex
+      }
     }
    }
  }
