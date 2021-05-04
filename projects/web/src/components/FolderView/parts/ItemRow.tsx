@@ -11,10 +11,12 @@ import SwipeButton from "./SwipeButton";
 import { Download, Move, Trash, Upload } from "react-feather";
 import useWindowSize from "../../../hooks/useWindowSize";
 import { cx } from "@linaria/core";
-import safePlural from "../../../utils/safePlural";
+// import safePlural from "../../../utils/safePlural";
 import path from "path";
 import RemoteFolder from "../../../models/RemoteFolder";
 import RemoteFile from "../../../models/RemoteFile";
+import useCurrentPath from "../../../hooks/useCurrentPath";
+import useDownloadItems from "../../../hooks/useDownloadItems";
 
 export interface ItemRowProps {
   item: RemoteFile | RemoteFolder;
@@ -29,6 +31,8 @@ export default function ItemRow({
   selected,
   onSelectedChange,
 }: ItemRowProps) {
+  const { currentLocation } = useCurrentPath();
+  const { downloadItems } = useDownloadItems();
   const { breakpoints } = useWindowSize();
   const itemName = path.basename(item.path);
   const fileMeta = null;
@@ -42,6 +46,12 @@ export default function ItemRow({
   //         "items"
   //       )}`
   //     : null;
+
+  const handleDownloadItem = () => {
+    if (currentLocation?.id != null) {
+      downloadItems(currentLocation.id, [item]);
+    }
+  };
 
   return (
     <li
@@ -111,6 +121,7 @@ export default function ItemRow({
             className="bg-indigo-500"
             icon={<Download />}
             label="Download"
+            onPress={handleDownloadItem}
           />
           <SwipeButton className="bg-blue-500" icon={<Move />} label="Move" />
           <SwipeButton className="bg-red-500" icon={<Trash />} label="Delete" />

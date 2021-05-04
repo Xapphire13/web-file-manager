@@ -1,11 +1,10 @@
 package com.xapphire13.wfs
 
 import com.apurebase.kgraphql.GraphQL
-import com.xapphire13.wfs.extensions.getItem
-import com.xapphire13.wfs.providers.LocationProvider
 import com.xapphire13.wfs.schema.itemSchema
 import com.xapphire13.wfs.schema.locationSchema
 import com.xapphire13.wfs.schema.scalarSchema
+import com.xapphire13.wfs.utils.downloadTokenToPath
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -47,14 +46,10 @@ fun Application.module(@Suppress("unused_parameter") testing: Boolean = false) {
 
 fun Application.registerRoutes() {
   routing {
-    get("/download") {
-      val locationId =
-          call.request.queryParameters["locationId"]
-              ?: throw Exception("locationId must be provided")
-      val path = call.request.queryParameters["path"] ?: throw Exception("path must be provided")
-      val item = LocationProvider.getLocation(locationId).getItem(path)
+    get("/download/{token}") {
+      val downloadToken = call.parameters["token"] ?: throw Exception("No download token!")
 
-      call.respondFile(File(item.realPath))
+      call.respondFile(File(downloadTokenToPath(downloadToken)))
     }
   }
 }
